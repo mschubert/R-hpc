@@ -1,0 +1,33 @@
+Package: R-hpc
+Title: R-hpc Course Material
+Version: 0.0.1
+Authors@R: c(
+    person('Michael', 'Schubert', email='mschu.dev@gmail.com',
+           role = c('aut', 'cre'),
+           comment = c(ORCID='0000-0002-6862-5221'))
+    )
+Maintainer: Michael Schubert <mschu.dev@gmail.com>
+Description: enter description here
+URL: https://mschubert.github.io/R-hpc/
+BugReports: https://github.com/mschubert/R-hpc/issues
+Depends:
+    R (>= 3.6.0)
+Imports:
+    methods,
+    progress,
+    utils
+License: Apache License (== 2.0) | file LICENSE
+Encoding: UTF-8
+Suggests:
+    devtools,
+    foreach,
+    iterators,
+    knitr,
+    parallel,
+    rmarkdown,
+    roxygen2 (>= 5.0.0),
+    testthat,
+    tools
+VignetteBuilder: knitr
+Roxygen: list(r6 = FALSE)
+RoxygenNote: 7.1.1
