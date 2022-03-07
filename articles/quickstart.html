@@ -41,8 +41,10 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/neovim-ide.html">R on HPC</a>
     <a class="dropdown-item" href="../articles/quickstart.html">Quick Start</a>
     <a class="dropdown-item" href="../articles/rscripts.html">R on HPC</a>
+    <a class="dropdown-item" href="../articles/workflows.html">R on HPC</a>
   </div>
 </li>
       </ul>
@@ -217,8 +219,9 @@ kbd {
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks 1</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task 1</span></span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 1024M</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> uname <span class="at">-n</span></span></code></pre></div>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time 8:00:00</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> uname <span class="at">-n</span></span></code></pre></div>
 <p>We can submit this script by saving it to a script file and then running <code>sbatch &lt;script&gt;</code>. It should tell us something like:</p>
 <blockquote>
 <p>Submitted batch job 1290046</p>
@@ -245,6 +248,8 @@ kbd {
 <li>
 <code>#SBATCH --mem</code> specifies the amount of memory requested; this is in total, other options include <code>--mem-per-task</code>, <code>--mem-per-cpu</code>, or <code>--mem-per-gpu</code>. Memory multipliers such as <code>K</code>, <code>M</code> and <code>G</code> are supported (kilobytes, megabytes and gigabytes, respectively).</li>
 <li>
+<code>#SBATCH --time</code> is the maximum amount of time after which the job will be terminated (<code>dd-hh:mm:ss</code>)</li>
+<li>
 <code>#SBATCH</code> commands need to be directly following the shebang, otherwise they will be ignored</li>
 <li>
 <code>srun</code> specifies the command to be run; it is not required for running individual computations, but helps set up parallel helpers, such as running the call once per task, or e.g. setting up MPI if this is used</li>
@@ -253,19 +258,65 @@ kbd {
 <h4 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
 </h4>
 <ul>
-<li>Create a batch submission script using the editor on the cluster</li>
+<li>Create a batch submission script like the one above using the command-line editor on the cluster</li>
 <li>Submit it using <code>sbatch &lt;script&gt;</code>, both with and without the <code>srun</code>. What changes?</li>
 <li>What happens with we change the <code>ntasks</code> paramter to <code>2</code>, both with and without the <code>srun</code> command?</li>
 </ul>
 </div>
 </div>
 <div class="section level3">
-<h3 id="submitting-an-r-script-as-job">Submitting an R script as job<a class="anchor" aria-label="anchor" href="#submitting-an-r-script-as-job"></a>
+<h3 id="r-on-hpc">R on HPC<a class="anchor" aria-label="anchor" href="#r-on-hpc"></a>
 </h3>
-<p>…</p>
+<p>R’s best developed parallel capabilities is running computations on multiple cores. Here, we will briefly outline which approaches are commonly used. For simplicity, let’s consider a simple R function that sleeps for a couple of seconds:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fsleep</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"starting "</span>, <span class="va">i</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"done!"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu">fsleep</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span></code></pre></div>
+<p>If we need to call this function 10 times, we could use something like <code>lapply</code>:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt; [1] "starting "</span>
+<span class="co">#&gt; [1] "done!"</span>
+<span class="co">#&gt;    user  system elapsed </span>
+<span class="co">#&gt;   0.005   0.000  10.017</span></code></pre></div>
+<p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makese sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed </span>
+<span class="co">#&gt;   0.003   0.010   5.020</span></code></pre></div>
+<p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
 </h4>
+<ul>
+<li>Create a “sleep script” on the computing cluster and a submission script that will request 1 task with 5 cores. Submit this script as a job. How long does it take? Does the runtime make sense?</li>
+<li>Submit the same script using a parallel <code>foreach</code> loop and a <code>PSOCK</code> cluster. Does it run? Do the results make sense?</li>
+<li>A newer approach that aims at providing a common interface to many parallel backends is the <code>future</code> package. Can you run the above example using <code>plan(multisession)</code> and <code>future.apply</code>?</li>
+</ul>
 </div>
 </div>
   </main>
