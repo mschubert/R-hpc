@@ -40,18 +40,65 @@ knitr::opts_chunk$set(
 )
 ```
 
+### Prerequesites
+
+Working on High-Performance Computing (HPC) facilities, we primarily interface
+with the systems via a command-line shell. We expect the people in this course
+to have a wide range of expertise and different starting points concerning the
+use of the command-line, which will make it easier or more challenging for
+participants, depending on where they are coming from.
+
+Similarly, we expect participants to start with different operating systems,
+e.g. not only Windows but also macOS and different Linux flavors. In order to
+keep the course consistent we recommend Windows users to work through the
+materials using the Windows Subsystem for Linux (WSL 2.0). This should be
+available for any up-to-date Windows 10 or later. We expect that macOS and Linux
+users are already familiar with their terminal.
+
+### Connecting to the computing cluster
+
+Command-line connections to the HPC are established using the Secure Shell tool
+(SSH). From a terminal, you can connect to Sulis using the following line:
+
+```{sh eval=FALSE}
+ssh -i <your keyfile> <user>@login.sulis.ac.uk
+```
+
+Since this is a bit tedious, we can outsource most of the information to a
+`~/.ssh/config` file with the following contents:
+
+```{sh eval=FALSE}
+Host sulis
+    Hostname login.sulis.ac.uk
+    User <username>
+#    ProxyCommand ssh <proxy> -W %h:%p   # when connecting via an SSH proxy
+    IdentityFile ~/.ssh/<sulis_rsa>
+```
+
+Having it set up like this, establishing the connection is as simple as typing:
+
+```{sh eval=FALSE}
+ssh sulis
+```
+
+This will come in handy when not only connecting to the HPC once, but also
+copying files between your local machine and the HPC.
+
+Note, however, that in both cases you will still need to decrypt your private
+key file with your passphrase (which, at least on macOS and Linux can be
+automated using your OS keychain) and the 2FA token once a day.
+
 ### Setting up R
 
 ```{sh eval=FALSE}
 which R
+# /usr/bin/which: no R in [...]
 ```
 
 ```{sh eval=FALSE}
 module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2
-```
-
-```{sh eval=FALSE}
 which R
+# /sulis/easybuild/software/R/4.1.2-foss-2021b/bin/R
 ```
 
 ### Running an interactive job
@@ -94,11 +141,8 @@ which R
 ```
 
 We can then run or via the command-line, as we can on our local machines as
-well. This will give us an R command prompt:
+well. Running `R` will give us an R command prompt:
 
-```{sh eval=FALSE}
-R
-```
 ```{sh echo=FALSE}
 R --no-save --no-restore -e "quit()"
 ```
@@ -185,12 +229,15 @@ and an "edit" mode. By typing the first <kbd>a</kbd>, we switched from the first
 to the latter.
 
 We can now use <kbd>Esc</kbd> to switch back from the edit to the normal mode.
-We can type `:w` <kbd>Enter</kbd> to write the file, or `:wq` to write the file
-and quit the editor. `:q!` will exit without saving any changes.
+In normal mode, we can type `:w` <kbd>Enter</kbd> to write the file, or `:wq` to
+write the file and quit the editor. `:q!` will exit without saving any changes.
 
-This is all you need to know to make `vim` as useful as `nano`. However, there
-are many more features that you can explore by running `vimtutor` from the
-command-line.
+This is all you need to know to make `vim` as useful as `nano`. However, if we
+now for instance edit an `.r` file we also get syntax highlighting. This feature
+alone makes it worth to use `nvim` instead of `nano`.
+
+You can explore more features by running `vimtutor` from the command-line, which
+is an interactive tool to familiarize yourself with how to use it effectively.
 
 ### Compute resources
 
