@@ -1,0 +1,49 @@
+---
+title: "Neovim as IDE"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Neovim as IDE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css echo=FALSE}
+img {
+    border: 0px !important;
+    margin: 2em 2em 2em 2em !important;
+}
+code {
+    border: 0px !important;
+}
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
+```
+
+```{r echo=FALSE, results="hide"}
+knitr::opts_chunk$set(
+    cache = FALSE,
+    echo = TRUE,
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+### Editing R scripts using Neovim
+
+### Persistent sessions with `tmux`
+
+```{sh eval=FALSE}
+```
+
