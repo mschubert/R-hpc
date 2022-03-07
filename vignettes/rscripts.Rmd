@@ -1,9 +1,9 @@
 ---
-title: "test vignette"
+title: "R on HPC"
 output:
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Quick Start}
+  %\VignetteIndexEntry{R on HPC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

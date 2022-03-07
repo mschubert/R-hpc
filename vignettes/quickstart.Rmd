@@ -16,6 +16,19 @@ img {
 code {
     border: 0px !important;
 }
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
 ```
 
 ```{r echo=FALSE, results="hide"}
@@ -40,9 +53,6 @@ module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2
 ```{sh eval=FALSE}
 which R
 ```
-
-### R from the command line
-
 
 ### Running an interactive job
 
@@ -101,9 +111,86 @@ y = 3
 x * y
 ```
 
+### Copying files
+
+There are different options for getting your files to the compute cluster. One
+option is to edit all files locally, and then copy them over SSH. So, for
+instance, one could have a local file `text.txt` and copy it over:
+
+```{sh eval=FALSE}
+scp text.txt host:
+```
+
+where you specified `host` in your `~/.ssh/config` before, or otherwise you may
+need to specify the user name, key file, and host manually (this will look
+differently if you are using a graphical SSH client). The `:` is used for the
+`scp` command to know which one is the remote end, i.e. you could use the
+following to copy the same file from the remote to your local end:
+
+```{sh eval=FALSE}
+scp host:test.txt .
+```
+
+Here, the `scp` command looks for `test.sh` in your home directory (`~`; this is
+the default if no directory is specified) and will copy it to your current
+directory (`.`).
+
+If you want to copy directories you need to use recursive copying, i.e. `scp
+-r`.
+
+Another, and maybe better alternative is the `rsync` command. This will keep
+timestamps intact, and can be used to copy only files that have updated
+timestamps (`-u`) compared to the local files (`-v` will print the files while
+copying):
+
+```{sh eval=FALSE}
+rsync -uvr host:test.txt .
+```
+
 ### Editing files
 
+For either making small changes or iterative work, it is often more convenient
+to edit files directly on the computing cluster instead of editing them locally
+and then copy them.
 
+There are multiple text-based editors that work in a terminal, such as `nano`,
+`emacs` and `vim`. `nano` is a minimalist editor without any special features,
+and is often recommended to users new to the terminal. The problem with that is
+that we get very quickly stuck at a local optimum, where we can make simple
+changes to a file, but will never get features such as syntax highlighting. The
+other two editors on the other hand either have or can be extended to have
+any/every feature imaginable.
+
+This is why for this course, we will show some basic features of `nvim`
+(`neovim`, a modern implementation of `vim`) instead. If you are already a user
+of `emacs`, please feel free to use this editor instead.
+
+To edit a simple text file, we can run:
+
+```{sh eval=FALSE}
+nvim myfile.txt
+```
+
+You will see that the console gets cleared, and we are shown the contents of an
+empty file instead. Try typing a couple of <kbd>a</kbd> in the file:
+
+```{sh eval=FALSE}
+aaaa
+```
+
+You will see the characters show up, as you would from another text editor as
+well. Notice, however, that the first <kbd>a</kbd> you typed did not show up,
+only all subsequent <kbd>a</kbd>s. This is because this editor has a "normal"
+and an "edit" mode. By typing the first <kbd>a</kbd>, we switched from the first
+to the latter.
+
+We can now use <kbd>Esc</kbd> to switch back from the edit to the normal mode.
+We can type `:w` <kbd>Enter</kbd> to write the file, or `:wq` to write the file
+and quit the editor. `:q!` will exit without saving any changes.
+
+This is all you need to know to make `vim` as useful as `nano`. However, there
+are many more features that you can explore by running `vimtutor` from the
+command-line.
 
 ### Compute resources
 
@@ -154,16 +241,38 @@ srun uname -n
 ```
 
 We can submit this script by saving it to a script file and then running `sbatch
-<script>`. It should tell us something like
+<script>`. It should tell us something like:
 
 > Submitted batch job 1290046
 
 where the number is the identifier of the job (and will be different with
 multiple runs).
 
-This will create an output file called `slurm-xxxxxx.out` (where `xxxxxx` is the
-job id) with the standard output of the command (the standard output is what
-would have otherwise been printed to the console).
+After we started it, we can check all jobs that our user is running by typing:
+
+```{sh eval=FALSE}
+squeue -u <username>
+```
+
+This should list a job with the above ID, show that it is currently running, and
+the node the job is running on. We can also get detailed information about the
+job using `scontrol`:
+
+```{sh eval=FALSE}
+scontrol show jobid <jobid>
+```
+
+This information will be available while the job is running and some (short)
+time after it is finished. We can now also see resources that we did not
+explicitly request, e.g. that the time limit was 1 hour, that we used the
+`compute` partition, and were able to use up to 2 Gb of memory.
+
+After the job started, it will create an output file called `slurm-xxxxxx.out`
+(where `xxxxxx` is the job id) with the standard output of the command (the
+standard output is what would have otherwise been printed to the console). After
+it is finished, it will contain the output of `uname -n`, which is the name of
+the node the command was run on. If all went well, it should contain `nodeXX`
+and not `login`, which means that it was run on one of the compute nodes.
 
 There's quite a few lines in there, so let's break this down:
 
@@ -176,17 +285,24 @@ There's quite a few lines in there, so let's break this down:
 * `#SBATCH --cpus-per-task` specifies the numbers of CPUs per task
 * `#SBATCH --mem` specifies the amount of memory requested; this is in total,
   other options include `--mem-per-task`, `--mem-per-cpu`, or `--mem-per-gpu`.
-  Memory multipliers such as `K`, `M` and `G` are supported.
+  Memory multipliers such as `K`, `M` and `G` are supported (kilobytes,
+  megabytes and gigabytes, respectively).
 * `#SBATCH` commands need to be directly following the shebang, otherwise they
   will be ignored
 * `srun` specifies the command to be run; it is not required for running
   individual computations, but helps set up parallel helpers, such as running
   the call once per task, or e.g. setting up MPI if this is used
 
-### Exercise
+#### Exercise
 
 * Create a batch submission script using the editor on the cluster
 * Submit it using `sbatch <script>`, both with and without the `srun`. What
   changes?
 * What happens with we change the `ntasks` paramter to `2`, both with and
   without the `srun` command?
+
+### Submitting an R script as job
+
+...
+
+#### Exercise
