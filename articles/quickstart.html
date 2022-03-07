@@ -42,7 +42,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/quickstart.html">Quick Start</a>
-    <a class="dropdown-item" href="../articles/rscripts.html">test vignette</a>
+    <a class="dropdown-item" href="../articles/rscripts.html">R on HPC</a>
   </div>
 </li>
       </ul>
@@ -86,6 +86,19 @@ img {
 code {
     border: 0px !important;
 }
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
 </style>
 <div class="section level3">
 <h3 id="setting-up-r">Setting up R<a class="anchor" aria-label="anchor" href="#setting-up-r"></a>
@@ -93,10 +106,6 @@ code {
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="r-from-the-command-line">R from the command line<a class="anchor" aria-label="anchor" href="#r-from-the-command-line"></a>
-</h3>
 </div>
 <div class="section level3">
 <h3 id="running-an-interactive-job">Running an interactive job<a class="anchor" aria-label="anchor" href="#running-an-interactive-job"></a>
@@ -139,37 +148,64 @@ code {
 <span class="co">#&gt; [1] 15</span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="copying-files">Copying files<a class="anchor" aria-label="anchor" href="#copying-files"></a>
+</h3>
+<p>There are different options for getting your files to the compute cluster. One option is to edit all files locally, and then copy them over SSH. So, for instance, one could have a local file <code>text.txt</code> and copy it over:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> text.txt host:</span></code></pre></div>
+<p>where you specified <code>host</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> host:test.txt .</span></code></pre></div>
+<p>Here, the <code>scp</code> command looks for <code>test.sh</code> in your home directory (<code>~</code>; this is the default if no directory is specified) and will copy it to your current directory (<code>.</code>).</p>
+<p>If you want to copy directories you need to use recursive copying, i.e. <code>scp -r</code>.</p>
+<p>Another, and maybe better alternative is the <code>rsync</code> command. This will keep timestamps intact, and can be used to copy only files that have updated timestamps (<code>-u</code>) compared to the local files (<code>-v</code> will print the files while copying):</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> host:test.txt .</span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="editing-files">Editing files<a class="anchor" aria-label="anchor" href="#editing-files"></a>
 </h3>
+<p>For either making small changes or iterative work, it is often more convenient to edit files directly on the computing cluster instead of editing them locally and then copy them.</p>
+<p>There are multiple text-based editors that work in a terminal, such as <code>nano</code>, <code>emacs</code> and <code>vim</code>. <code>nano</code> is a minimalist editor without any special features, and is often recommended to users new to the terminal. The problem with that is that we get very quickly stuck at a local optimum, where we can make simple changes to a file, but will never get features such as syntax highlighting. The other two editors on the other hand either have or can be extended to have any/every feature imaginable.</p>
+<p>This is why for this course, we will show some basic features of <code>nvim</code> (<code>neovim</code>, a modern implementation of <code>vim</code>) instead. If you are already a user of <code>emacs</code>, please feel free to use this editor instead.</p>
+<p>To edit a simple text file, we can run:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nvim</span> myfile.txt</span></code></pre></div>
+<p>You will see that the console gets cleared, and we are shown the contents of an empty file instead. Try typing a couple of <kbd>a</kbd> in the file:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aaaa</span></span></code></pre></div>
+<p>You will see the characters show up, as you would from another text editor as well. Notice, however, that the first <kbd>a</kbd> you typed did not show up, only all subsequent <kbd>a</kbd>s. This is because this editor has a “normal” and an “edit” mode. By typing the first <kbd>a</kbd>, we switched from the first to the latter.</p>
+<p>We can now use <kbd>Esc</kbd> to switch back from the edit to the normal mode. We can type <code>:w</code> <kbd>Enter</kbd> to write the file, or <code>:wq</code> to write the file and quit the editor. <code>:q!</code> will exit without saving any changes.</p>
+<p>This is all you need to know to make <code>vim</code> as useful as <code>nano</code>. However, there are many more features that you can explore by running <code>vimtutor</code> from the command-line.</p>
 </div>
 <div class="section level3">
 <h3 id="compute-resources">Compute resources<a class="anchor" aria-label="anchor" href="#compute-resources"></a>
 </h3>
 <p>For now, we have submitted our job while specifying only the minimum required parameters and relying on the defaults for others. For instance, we have not specific a <code>partition</code>, which is one of several job queues that we can submit our jobs to. To get an overview of which are available, we can use the <code>sinfo</code> command:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sinfo</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sinfo</span></span></code></pre></div>
 <p>Here, we see the different partitions listed and a number of nodes associated with each of them, including the walltime (maximum amount of time that a job can request) for each queue. You will see that one queue is marked with a <code>*</code>. This denotes the default queue, which we have been using by not specifying any particular queue via the <code>--partition</code> parameter.</p>
 <p>One argument that we did specify but not explain in more detail is the <code>account</code>. This specifies the connection between your user name and a collection of resources available that you can use, which are then subtracted from this budget. You can check which accounts your user has access to by typing:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sacctmgr</span> show associations where user=<span class="op">&lt;</span>your user name<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sacctmgr</span> show associations where user=<span class="op">&lt;</span>your user name<span class="op">&gt;</span></span></code></pre></div>
 <p>You will likely only belong to one account, or project, at this time (which was the one created for this course).</p>
 </div>
 <div class="section level3">
 <h3 id="job-submission-scripts">Job submission scripts<a class="anchor" aria-label="anchor" href="#job-submission-scripts"></a>
 </h3>
 <p>Usually, you will want to run more complex computations than can be specified with a single <code>srun</code>. For running multiple commands on multiple hosts, it is often better to specify the resource requirements and exact commands using a job submission script. This may look like the following:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition compute</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks 1</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task 1</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 1024M</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> uname <span class="at">-n</span></span></code></pre></div>
-<p>We can submit this script by saving it to a script file and then running <code>sbatch &lt;script&gt;</code>. It should tell us something like</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition compute</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks 1</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task 1</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 1024M</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> uname <span class="at">-n</span></span></code></pre></div>
+<p>We can submit this script by saving it to a script file and then running <code>sbatch &lt;script&gt;</code>. It should tell us something like:</p>
 <blockquote>
 <p>Submitted batch job 1290046</p>
 </blockquote>
 <p>where the number is the identifier of the job (and will be different with multiple runs).</p>
-<p>This will create an output file called <code>slurm-xxxxxx.out</code> (where <code>xxxxxx</code> is the job id) with the standard output of the command (the standard output is what would have otherwise been printed to the console).</p>
+<p>After we started it, we can check all jobs that our user is running by typing:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">squeue</span> <span class="at">-u</span> <span class="op">&lt;</span>username<span class="op">&gt;</span></span></code></pre></div>
+<p>This should list a job with the above ID, show that it is currently running, and the node the job is running on. We can also get detailed information about the job using <code>scontrol</code>:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scontrol</span> show jobid <span class="op">&lt;</span>jobid<span class="op">&gt;</span></span></code></pre></div>
+<p>This information will be available while the job is running and some (short) time after it is finished. We can now also see resources that we did not explicitly request, e.g. that the time limit was 1 hour, that we used the <code>compute</code> partition, and were able to use up to 2 Gb of memory.</p>
+<p>After the job started, it will create an output file called <code>slurm-xxxxxx.out</code> (where <code>xxxxxx</code> is the job id) with the standard output of the command (the standard output is what would have otherwise been printed to the console). After it is finished, it will contain the output of <code>uname -n</code>, which is the name of the node the command was run on. If all went well, it should contain <code>nodeXX</code> and not <code>login</code>, which means that it was run on one of the compute nodes.</p>
 <p>There’s quite a few lines in there, so let’s break this down:</p>
 <ul>
 <li>
@@ -183,21 +219,30 @@ code {
 <li>
 <code>#SBATCH --cpus-per-task</code> specifies the numbers of CPUs per task</li>
 <li>
-<code>#SBATCH --mem</code> specifies the amount of memory requested; this is in total, other options include <code>--mem-per-task</code>, <code>--mem-per-cpu</code>, or <code>--mem-per-gpu</code>. Memory multipliers such as <code>K</code>, <code>M</code> and <code>G</code> are supported.</li>
+<code>#SBATCH --mem</code> specifies the amount of memory requested; this is in total, other options include <code>--mem-per-task</code>, <code>--mem-per-cpu</code>, or <code>--mem-per-gpu</code>. Memory multipliers such as <code>K</code>, <code>M</code> and <code>G</code> are supported (kilobytes, megabytes and gigabytes, respectively).</li>
 <li>
 <code>#SBATCH</code> commands need to be directly following the shebang, otherwise they will be ignored</li>
 <li>
 <code>srun</code> specifies the command to be run; it is not required for running individual computations, but helps set up parallel helpers, such as running the call once per task, or e.g. setting up MPI if this is used</li>
 </ul>
-</div>
-<div class="section level3">
-<h3 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
-</h3>
+<div class="section level4">
+<h4 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
+</h4>
 <ul>
 <li>Create a batch submission script using the editor on the cluster</li>
 <li>Submit it using <code>sbatch &lt;script&gt;</code>, both with and without the <code>srun</code>. What changes?</li>
 <li>What happens with we change the <code>ntasks</code> paramter to <code>2</code>, both with and without the <code>srun</code> command?</li>
 </ul>
+</div>
+</div>
+<div class="section level3">
+<h3 id="submitting-an-r-script-as-job">Submitting an R script as job<a class="anchor" aria-label="anchor" href="#submitting-an-r-script-as-job"></a>
+</h3>
+<p>…</p>
+<div class="section level4">
+<h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
+</h4>
+</div>
 </div>
   </main>
 </div>
