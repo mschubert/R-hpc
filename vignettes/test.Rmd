@@ -1,0 +1,35 @@
+---
+title: "test vignette"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css echo=FALSE}
+img {
+    border: 0px !important;
+    margin: 2em 2em 2em 2em !important;
+}
+code {
+    border: 0px !important;
+}
+```
+
+```{r echo=FALSE, results="hide"}
+knitr::opts_chunk$set(
+    cache = FALSE,
+    echo = TRUE,
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+module load GCC/11.2.0 OpenMPI/4.1.1 rjags/4-10-R-4.1.2
+which R
+
+sinfo
+
+sacctmgr show associations where user=mschuber
