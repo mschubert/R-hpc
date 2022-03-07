@@ -283,6 +283,7 @@ submission script. This may look like the following:
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
 #SBATCH --mem 1024M
+#SBATCH --time 8:00:00
 
 srun uname -n
 ```
@@ -334,6 +335,8 @@ There's quite a few lines in there, so let's break this down:
   other options include `--mem-per-task`, `--mem-per-cpu`, or `--mem-per-gpu`.
   Memory multipliers such as `K`, `M` and `G` are supported (kilobytes,
   megabytes and gigabytes, respectively).
+* `#SBATCH --time` is the maximum amount of time after which the job will be
+  terminated (`dd-hh:mm:ss`)
 * `#SBATCH` commands need to be directly following the shebang, otherwise they
   will be ignored
 * `srun` specifies the command to be run; it is not required for running
@@ -342,14 +345,59 @@ There's quite a few lines in there, so let's break this down:
 
 #### Exercise
 
-* Create a batch submission script using the editor on the cluster
+* Create a batch submission script like the one above using the command-line
+  editor on the cluster
 * Submit it using `sbatch <script>`, both with and without the `srun`. What
   changes?
 * What happens with we change the `ntasks` paramter to `2`, both with and
   without the `srun` command?
 
-### Submitting an R script as job
+### R on HPC
 
-...
+R's best developed parallel capabilities is running computations on multiple
+cores. Here, we will briefly outline which approaches are commonly used. For
+simplicity, let's consider a simple R function that sleeps for a couple of
+seconds:
+
+```{r}
+fsleep = function(i) {
+    print("starting ", i)
+    Sys.sleep(1)
+    print("done!")
+}
+
+fsleep(1)
+```
+
+If we need to call this function 10 times, we could use something like `lapply`:
+
+```{r}
+system.time({ lapply(1:10, fsleep) })
+```
+
+This will, unsurprisingly, take 10 times as long as an individual call to
+`fsleep()`. For many use cases, it makese sense to run computations (done in
+reality instead of just sleeping) in parallel. The probably most integrated
+solution is the `parallel` package, which is one of the core packages
+distributed with a standard R installation by default.
+
+```{r}
+system.time({ parallel::mclapply(1:10, fsleep) })
+```
+
+However, there are also other possibilities, e.g. the
+[`foreach`](https://cran.r-project.org/package=foreach) package that enables
+parallel processing using the `%dopar%` command, or the
+[`future`](https://cran.r-project.org/package=future) package by using
+`plan(multisession)`.
 
 #### Exercise
+
+* Create a "sleep script" on the computing cluster and a submission script that
+  will request 1 task with 5 cores. Submit this script as a job. How long does
+  it take? Does the runtime make sense?
+* Submit the same script using a parallel `foreach` loop and a `PSOCK` cluster.
+  Does it run? Do the results make sense?
+* A newer approach that aims at providing a common interface to many parallel
+  backends is the `future` package. Can you run the above example using
+  `plan(multisession)` and `future.apply`?
