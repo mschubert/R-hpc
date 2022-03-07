@@ -27,8 +27,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Getting familiar with the environment
-
 ### Setting up R
 
 ```{sh eval=FALSE}
@@ -92,7 +90,7 @@ well. This will give us an R command prompt:
 R
 ```
 ```{sh echo=FALSE}
-R --no-save --no-store -e "quit()"
+R --no-save --no-restore -e "quit()"
 ```
 
 We can use `R` as we could use the R shell in e.g. RStudio as well:
@@ -146,19 +144,49 @@ submission script. This may look like the following:
 
 ```{sh eval=FALSE}
 #!/bin/sh
-#SBATCH
+#SBATCH --account su105
+#SBATCH --partition compute
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 1
+#SBATCH --mem 1024M
+
+srun uname -n
 ```
+
+We can submit this script by saving it to a script file and then running `sbatch
+<script>`. It should tell us something like
+
+> Submitted batch job 1290046
+
+where the number is the identifier of the job (and will be different with
+multiple runs).
+
+This will create an output file called `slurm-xxxxxx.out` (where `xxxxxx` is the
+job id) with the standard output of the command (the standard output is what
+would have otherwise been printed to the console).
 
 There's quite a few lines in there, so let's break this down:
 
 * `#!/bin/sh` is called a shebang and specifies which application should be used
-  to run the script if it is set as executable (`chmod +x <script>`) and can be
-  run with typing `./<script>`. It must be on the first line of the script.
-* ``
-* ``
-* ``
-* ``
-* ``
-* ``
-* ``
-* ``
+  to run the script, which is required by `sbatch` (otherwise it will refuse to
+  submit the job)
+* `#SBATCH --account` is needed again to budget the resources correctly
+* `#SBATCH --parititon` this time we specific the `compute` partition explicitly
+* `#SBATCH --ntasks` lists the tasks (computations) this job contains
+* `#SBATCH --cpus-per-task` specifies the numbers of CPUs per task
+* `#SBATCH --mem` specifies the amount of memory requested; this is in total,
+  other options include `--mem-per-task`, `--mem-per-cpu`, or `--mem-per-gpu`.
+  Memory multipliers such as `K`, `M` and `G` are supported.
+* `#SBATCH` commands need to be directly following the shebang, otherwise they
+  will be ignored
+* `srun` specifies the command to be run; it is not required for running
+  individual computations, but helps set up parallel helpers, such as running
+  the call once per task, or e.g. setting up MPI if this is used
+
+### Exercise
+
+* Create a batch submission script using the editor on the cluster
+* Submit it using `sbatch <script>`, both with and without the `srun`. What
+  changes?
+* What happens with we change the `ntasks` paramter to `2`, both with and
+  without the `srun` command?
