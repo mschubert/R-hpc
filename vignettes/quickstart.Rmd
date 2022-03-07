@@ -1,0 +1,164 @@
+---
+title: "Quick Start"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css echo=FALSE}
+img {
+    border: 0px !important;
+    margin: 2em 2em 2em 2em !important;
+}
+code {
+    border: 0px !important;
+}
+```
+
+```{r echo=FALSE, results="hide"}
+knitr::opts_chunk$set(
+    cache = FALSE,
+    echo = TRUE,
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+## Getting familiar with the environment
+
+### Setting up R
+
+```{sh eval=FALSE}
+which R
+```
+
+```{sh eval=FALSE}
+module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2
+```
+
+```{sh eval=FALSE}
+which R
+```
+
+### R from the command line
+
+
+### Running an interactive job
+
+The simplest way to request an interactive job is to use Slurm's `srun` command
+where we specify that we want to run a shell (specified by the `$SHELL`
+environment variable) that is connected to our terminal input and output
+(`--pty`). In addition, we need to specify the account our requested resources
+will be budgeted to (`--account`) We can do that by running:
+
+```{sh eval=FALSE}
+srun --account su105 --pty $SHELL
+```
+
+You will see that your command prompt changes from `user@login` to
+`user$nodeXX`, which means that we are now connected to a compute node instead
+of the login node. Here, we are allowed to run heavy computations within the
+resource constraints that we specified.
+
+First, let's get an overview of which processes are already running on this
+node. This we can do by running the resource monitor `htop`:
+
+```{sh eval=FALSE}
+htop
+```
+
+In this overview, we can see how many cores the compute node has, how many
+processes are running, and how much memory is used. Depending on how much of
+those resources we requested (and the overall load), we will see that at least
+our resource allocation is still free. We do, however, need to stay within our
+allocation (and not the overall amount of available resources), because
+otherwise our processes will be terminated automatically.
+
+If we have loaded the R module beforehand, we'll see that the `$PATH` (the
+environment variable where our shell looks for executables) is still set up to
+include R. We can check this by asking for the R path:
+
+```{sh eval=FALSE}
+which R
+```
+
+We can then run or via the command-line, as we can on our local machines as
+well. This will give us an R command prompt:
+
+```{sh eval=FALSE}
+R
+```
+```{sh echo=FALSE}
+R --no-save --no-store -e "quit()"
+```
+
+We can use `R` as we could use the R shell in e.g. RStudio as well:
+
+```{r}
+x = 5
+y = 3
+x * y
+```
+
+### Editing files
+
+
+
+### Compute resources
+
+For now, we have submitted our job while specifying only the minimum required
+parameters and relying on the defaults for others. For instance, we have not
+specific a `partition`, which is one of several job queues that we can submit
+our jobs to. To get an overview of which are available, we can use the `sinfo`
+command:
+
+```{sh eval=FALSE}
+sinfo
+```
+
+Here, we see the different partitions listed and a number of nodes associated
+with each of them, including the walltime (maximum amount of time that a job can
+request) for each queue. You will see that one queue is marked with a `*`. This
+denotes the default queue, which we have been using by not specifying any
+particular queue via the `--partition` parameter.
+
+One argument that we did specify but not explain in more detail is the
+`account`. This specifies the connection between your user name and a collection
+of resources available that you can use, which are then subtracted from this
+budget. You can check which accounts your user has access to by typing:
+
+```{sh eval=FALSE}
+sacctmgr show associations where user=<your user name>
+```
+
+You will likely only belong to one account, or project, at this time (which was
+the one created for this course).
+
+### Job submission scripts
+
+Usually, you will want to run more complex computations than can be specified
+with a single `srun`. For running multiple commands on multiple hosts, it is
+often better to specify the resource requirements and exact commands using a job
+submission script. This may look like the following:
+
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH
+```
+
+There's quite a few lines in there, so let's break this down:
+
+* `#!/bin/sh` is called a shebang and specifies which application should be used
+  to run the script if it is set as executable (`chmod +x <script>`) and can be
+  run with typing `./<script>`. It must be on the first line of the script.
+* ``
+* ``
+* ``
+* ``
+* ``
+* ``
+* ``
+* ``

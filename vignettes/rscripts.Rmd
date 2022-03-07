@@ -27,9 +27,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-module load GCC/11.2.0 OpenMPI/4.1.1 rjags/4-10-R-4.1.2
-which R
+## ...
 
-sinfo
+```{sh eval=FALSE}
+module load rjags/4-10-R-4.1.2
+```
 
-sacctmgr show associations where user=mschuber
