@@ -22,7 +22,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-default navbar-expand-lg bg-light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">Rhpc</a>
 
@@ -35,15 +35,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
+<li class="active nav-item">
+  <a class="nav-link" href="../articles/quickstart.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
 </li>
-<li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/quickstart.html">Quick Start</a>
-    <a class="dropdown-item" href="../articles/rscripts.html">test vignette</a>
-  </div>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/rscript.html">R on HPC</a>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -52,8 +51,8 @@
 
       <ul class="navbar-nav">
 <li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/mschubert/R-hpc/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a class="external-link nav-link" href="https://github.com/mschubert/clustermq">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -87,9 +86,6 @@ code {
     border: 0px !important;
 }
 </style>
-<div class="section level2">
-<h2 id="getting-familiar-with-the-environment">Getting familiar with the environment<a class="anchor" aria-label="anchor" href="#getting-familiar-with-the-environment"></a>
-</h2>
 <div class="section level3">
 <h3 id="setting-up-r">Setting up R<a class="anchor" aria-label="anchor" href="#setting-up-r"></a>
 </h3>
@@ -114,9 +110,7 @@ code {
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span></code></pre></div>
 <p>We can then run or via the command-line, as we can on our local machines as well. This will give us an R command prompt:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span></span></code></pre></div>
-<pre><code><span class="co">#&gt; WARNING: unknown option '--no-store'</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
+<pre><code><span class="co">#&gt; </span>
 <span class="co">#&gt; R version 4.1.2 (2021-11-01) -- "Bird Hippie"</span>
 <span class="co">#&gt; Copyright (C) 2021 The R Foundation for Statistical Computing</span>
 <span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span>
@@ -162,24 +156,49 @@ code {
 </h3>
 <p>Usually, you will want to run more complex computations than can be specified with a single <code>srun</code>. For running multiple commands on multiple hosts, it is often better to specify the resource requirements and exact commands using a job submission script. This may look like the following:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH</span></span></code></pre></div>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition compute</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks 1</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task 1</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 1024M</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> uname <span class="at">-n</span></span></code></pre></div>
+<p>We can submit this script by saving it to a script file and then running <code>sbatch &lt;script&gt;</code>. It should tell us something like</p>
+<blockquote>
+<p>Submitted batch job 1290046</p>
+</blockquote>
+<p>where the number is the identifier of the job (and will be different with multiple runs).</p>
+<p>This will create an output file called <code>slurm-xxxxxx.out</code> (where <code>xxxxxx</code> is the job id) with the standard output of the command (the standard output is what would have otherwise been printed to the console).</p>
 <p>There’s quite a few lines in there, so let’s break this down:</p>
 <ul>
 <li>
-<code>#!/bin/sh</code> is called a shebang and specifies which application should be used to run the script if it is set as executable (<code>chmod +x &lt;script&gt;</code>) and can be run with typing <code>./&lt;script&gt;</code>. It must be on the first line of the script.</li>
-<li>``</li>
-<li>``</li>
-<li>``</li>
-<li>``</li>
-<li>``</li>
-<li>``</li>
-<li>``</li>
-<li>``</li>
+<code>#!/bin/sh</code> is called a shebang and specifies which application should be used to run the script, which is required by <code>sbatch</code> (otherwise it will refuse to submit the job)</li>
+<li>
+<code>#SBATCH --account</code> is needed again to budget the resources correctly</li>
+<li>
+<code>#SBATCH --parititon</code> this time we specific the <code>compute</code> partition explicitly</li>
+<li>
+<code>#SBATCH --ntasks</code> lists the tasks (computations) this job contains</li>
+<li>
+<code>#SBATCH --cpus-per-task</code> specifies the numbers of CPUs per task</li>
+<li>
+<code>#SBATCH --mem</code> specifies the amount of memory requested; this is in total, other options include <code>--mem-per-task</code>, <code>--mem-per-cpu</code>, or <code>--mem-per-gpu</code>. Memory multipliers such as <code>K</code>, <code>M</code> and <code>G</code> are supported.</li>
+<li>
+<code>#SBATCH</code> commands need to be directly following the shebang, otherwise they will be ignored</li>
+<li>
+<code>srun</code> specifies the command to be run; it is not required for running individual computations, but helps set up parallel helpers, such as running the call once per task, or e.g. setting up MPI if this is used</li>
 </ul>
 </div>
+<div class="section level3">
+<h3 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
+</h3>
+<ul>
+<li>Create a batch submission script using the editor on the cluster</li>
+<li>Submit it using <code>sbatch &lt;script&gt;</code>, both with and without the <code>srun</code>. What changes?</li>
+<li>What happens with we change the <code>ntasks</code> paramter to <code>2</code>, both with and without the <code>srun</code> command?</li>
+</ul>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
-    </nav></aside>
+  </main>
 </div>
 
 
