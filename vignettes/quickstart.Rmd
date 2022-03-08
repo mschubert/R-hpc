@@ -40,7 +40,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Prerequesites
+## Prerequesites
 
 Working on High-Performance Computing (HPC) facilities, we primarily interface
 with the systems via a command-line shell. We expect the people in this course
@@ -55,7 +55,7 @@ materials using the Windows Subsystem for Linux (WSL 2.0). This should be
 available for any up-to-date Windows 10 or later. We expect that macOS and Linux
 users are already familiar with their terminal.
 
-### Connecting to the computing cluster
+## Connecting to the computing cluster
 
 Command-line connections to the HPC are established using the Secure Shell tool
 (SSH). From a terminal, you can connect to Sulis using the following line:
@@ -88,7 +88,7 @@ Note, however, that in both cases you will still need to decrypt your private
 key file with your passphrase (which, at least on macOS and Linux can be
 automated using your OS keychain) and the 2FA token once a day.
 
-### Setting up R
+## Setting up R
 
 ```{sh eval=FALSE}
 which R
@@ -101,7 +101,7 @@ which R
 # /sulis/easybuild/software/R/4.1.2-foss-2021b/bin/R
 ```
 
-### Running an interactive job
+## Running an interactive job
 
 The simplest way to request an interactive job is to use Slurm's `srun` command
 where we specify that we want to run a shell (specified by the `$SHELL`
@@ -155,7 +155,7 @@ y = 3
 x * y
 ```
 
-### Copying files
+## Copying files
 
 There are different options for getting your files to the compute cluster. One
 option is to edit all files locally, and then copy them over SSH. So, for
@@ -191,7 +191,7 @@ copying):
 rsync -uvr host:test.txt .
 ```
 
-### Editing files
+## Editing files
 
 For either making small changes or iterative work, it is often more convenient
 to edit files directly on the computing cluster instead of editing them locally
@@ -239,7 +239,7 @@ alone makes it worth to use `nvim` instead of `nano`.
 You can explore more features by running `vimtutor` from the command-line, which
 is an interactive tool to familiarize yourself with how to use it effectively.
 
-### Compute resources
+## Compute resources
 
 For now, we have submitted our job while specifying only the minimum required
 parameters and relying on the defaults for others. For instance, we have not
@@ -269,7 +269,7 @@ sacctmgr show associations where user=<your user name>
 You will likely only belong to one account, or project, at this time (which was
 the one created for this course).
 
-### Job submission scripts
+## Job submission scripts
 
 Usually, you will want to run more complex computations than can be specified
 with a single `srun`. For running multiple commands on multiple hosts, it is
@@ -343,16 +343,16 @@ There's quite a few lines in there, so let's break this down:
   individual computations, but helps set up parallel helpers, such as running
   the call once per task, or e.g. setting up MPI if this is used
 
-#### Exercise
+### Exercise
 
 * Create a batch submission script like the one above using the command-line
   editor on the cluster
 * Submit it using `sbatch <script>`, both with and without the `srun`. What
   changes?
-* What happens with we change the `ntasks` paramter to `2`, both with and
+* What happens with we change the `ntasks` parameter to `2`, both with and
   without the `srun` command?
 
-### R on HPC
+## R on HPC
 
 R's best developed parallel capabilities is running computations on multiple
 cores. Here, we will briefly outline which approaches are commonly used. For
