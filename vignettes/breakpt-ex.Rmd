@@ -40,9 +40,111 @@ knitr::opts_chunk$set(
 )
 ```
 
-## ...
+## Change points in a time course
+
+In order to not only use `Sys.sleep()` but do some actual computations, we chose
+as a toy problem the inference of change points in a time course with repeated
+observations of the same measurement. First, we will start off with simulating
+data that has an increasing integer `x` coordinate (time point) and a continuous
+`y` coordinate (observation value).
+
+We will then use the `mcp` package to detect a point in `x` where the value of
+`y` changes abruptly. This package is able to infer many different kinds of
+change points. Here, we make use of changing intercepts with constant, normally
+distributed noise. The package is built on `rjags`, which uses a Gibbs sampling
+Markov-Chain Monte Carlo (MCMC).
+
+These computations are usually computationally expensive, but the individual
+sampling chains are independent of each other. This makes this kind of problem
+amenable to extensive parallelization.
+
+Fortunately, the `rjags` package is already provided as a module, so we can load
+it using the following command:
 
 ```{sh eval=FALSE}
 module load rjags/4-10-R-4.1.2
 ```
+
+After running this, it should be available from within R via `library(rjags)`.
+We still need to `install.packages("mcp")`, but as this does not require
+external tools it should work without issues. Note that the system-wide R
+package library is not writable for individual users, so you have to use your
+user library in your home directory (R will prompt you to do this).
+
+## Creating a function to simulate data
+
+We can use the following function to simulate our data:
+
+```{r}
+simulate_data = function(n=1, len=1000, bps=c(0,1,2)) {
+    # simulate one data set with random break points and y coordinates
+    simulate_one = function() {
+        sim = data.frame(x=seq_len(len), y=rnorm(len))
+        for (bp in sample(bps, 1)) {
+            loc = sample(seq_len(len), 1)
+            sim$y[loc:len] = sim$y[loc:len] + rnorm(1)
+        }
+        sim
+    }
+
+    # if we simulate one data set, return a data.frame, otherwise a list thereof
+    res = replicate(n, simulate_one(), simplify=FALSE)
+    if (length(res) == 1) {
+        res[[1]]
+    } else {
+        res
+    }
+}
+```
+
+This will randomly generate one sample with our `x` and `y` coordinates. The
+resulting data should look something like this:
+
+```{r}
+sim = simulate_data()
+plot(sim)
+```
+
+## Running break point inference
+
+```{r}
+library(mcp)
+
+run_mcp = function(sim) {
+    # one unbroken segment, 2 segments with one break point, 3 segments 2 bps
+    mods = list(list(y ~ 1),
+                list(y ~ 1, ~ 1),
+                list(y ~ 1, ~ 1, ~ 1))
+
+    # fit all three models, select the best using leave-one-out
+    fits = lapply(mods, function(m) mcp::mcp(m, data=sim, par_x="x"))
+    compare = as.data.frame(loo::loo_compare(lapply(fits, mcp::loo)))
+    best = as.integer(sub("model", "", rownames(compare)))[1]
+    fits[[best]]
+}
+```
+
+The resulting model should look something like this:
+
+```{r}
+mod = run_mcp(sim)
+plot(mod)
+```
+
+#### Exercise
+
+* Use your editor to create the break point simulation script (hint: you can use
+  <kbd>Esc</kbd>+`:set paste` in nvim to copy-paste the text without automatic
+  indentation and `:set nopaste` to return)
+* Simulate data for one and two break points
+* Start an interactive job with 1 task and 5 cores
+* Run the `mcp` inference script to try and estimate the breakpoints from the
+  data. Do they match to the parameters of your simulation? (hint: you can use
+  the `plot` function on an `mcp` model object)
+* Which options do you see to make this code run faster? (hint: there is both
+  `mcp`-provided parallelism and and sequential steps in the inference code)
+* How much runtime can you save by running computations in parallel?
+
+## Bigger data sets
+
 

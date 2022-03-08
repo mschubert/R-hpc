@@ -13,6 +13,7 @@ BugReports: https://github.com/mschubert/R-hpc/issues
 Depends:
     R (>= 3.6.0)
 Imports:
+    mcp,
     methods,
     progress,
     utils
