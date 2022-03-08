@@ -101,11 +101,21 @@ This will randomly generate one sample with our `x` and `y` coordinates. The
 resulting data should look something like this:
 
 ```{r}
-sim = simulate_data()
+sim = simulate_data(bps=1)
 plot(sim)
 ```
 
 ## Running break point inference
+
+We can now use our simulated data as a starting point to infer the breakpoints
+that we simulated. Using the `mcp` package, we run three different models:
+
+* One segment, no breakpoints
+* Two segments, one breakpoint
+* Three segments, two breakpoints
+
+When then compare these models in terms of how well they fit the data, and
+return the model that fits best:
 
 ```{r}
 library(mcp)
@@ -131,20 +141,141 @@ mod = run_mcp(sim)
 plot(mod)
 ```
 
+Here, we see the `x` and `y` coordinates of our observations as before, but in
+addition we see the traces of the intercepts (grey lines) and the probability
+density of the break point itself (blue line close to the bottom of the plot).
+
 #### Exercise
 
-* Use your editor to create the break point simulation script (hint: you can use
-  <kbd>Esc</kbd>+`:set paste` in nvim to copy-paste the text without automatic
-  indentation and `:set nopaste` to return)
+* Use your editor to create the break point simulation script (_hint_: you can
+  use <kbd>Esc</kbd>+`:set paste` in nvim to copy-paste the text without
+  automatic indentation and `:set nopaste` to return)
 * Simulate data for one and two break points
 * Start an interactive job with 1 task and 5 cores
 * Run the `mcp` inference script to try and estimate the breakpoints from the
-  data. Do they match to the parameters of your simulation? (hint: you can use
-  the `plot` function on an `mcp` model object)
-* Which options do you see to make this code run faster? (hint: there is both
+  data. Do they match to the parameters of your simulation? (_hint_: you can use
+  the `plot` function on an `mcp` model object; this will create an `Rplots.pdf`
+  after which you'll need to `dev.off()` and copy to your local machine)
+* Which options do you see to make this code run faster? (_hint_: there is both
   `mcp`-provided parallelism and and sequential steps in the inference code)
 * How much runtime can you save by running computations in parallel?
 
 ## Bigger data sets
 
+The strategy of reserving a node with many CPUs works well up to the extent
+where we want to process more computations in parallel than there is CPUs on a
+given node (modern nodes often have up to 128 cores/threads).
 
+Here, we want to simulate such a big computational task, but for this to not use
+too many resources we will limit the overall amount.
+
+#### Exercise
+
+* Simulate 10 breakpoint data sets using the function above, and save the
+  resulting list in an `.rds` object (using `saveRDS`)
+* Write a submission script with 10 tasks that load the object, subset the
+  current task index, and save the resulting model as `.rds` and model plot as
+  `.pdf` (_hint_: there are automatic environment variables available for each
+  slurm run, such as [`SLURM_PROCID`](https://slurm.schedmd.com/sbatch.html#lbAK))
+
+## HPC-specific packages
+
+There are also multiple packages available to make use of HPC resources from
+within R. That is to say, that R will submit a job or multiple jobs, and
+retrieve the result back to the session.
+
+There is, for instance, the packages `BatchJobs` and `batchtools`. These make
+use of the networked file system to write each call and its arguments to a file,
+that is then retrieved by the job and excecuted. These packages are robust for
+small numbers of jobs, however, the will put a substantial strain on the file
+system for a high number of function calls.
+
+Instead, we will introduce two packages that make only little use of the shared
+file system, `slurmR` and `clustermq`. (Note that I am the author of the latter,
+so there's a bit of a conflict of interest here.)
+
+#### slurmR
+
+The [`slurmR`](https://uscbiostats.github.io/slurmR/) package is a lightweight
+(dependency-free) R package that allows users to interact with the scheduler.
+
+It can be used to create a cluster object on Slurm tasks analogous to
+`parallel::makePSOCKcluster`. The command for this is
+`slurmR::makeSlurmCluster(ntasks)`, which can then be used with the `parLapply`
+or `parSapply` functions:
+
+```{r eval=FALSE}
+library(slurmR)
+cl = makeSlurmCluster(5)
+
+res =  parSapply(1:100, function(x) mean(runif(100)))
+
+stopCluster(cl)
+```
+
+The `sbatch` call that is created via `makeSlurmCluster` can be customized by
+passing different parameters to the cluster creation function. In particular, we
+need to:
+
+* Include the right budgeting account
+
+More details can be found in their [Getting Started
+vignette](https://uscbiostats.github.io/slurmR/articles/getting-started.html).
+
+#### clustermq
+
+The [`clustermq`](https://mschubert.github.io/clustermq/) package provides an
+interface to multiple HPC schedulers (including Slurm) via the ZeroMQ socket
+library, available as a module:
+
+```{sh eval=FALSE}
+module load GCCcore/10.2.0 ZeroMQ/4.3.3
+```
+
+```{r eval=FALSE}
+library(clustermq)
+
+fx = function(x) x * 2
+
+Q(fx, x=1:3, n_jobs=1)
+```
+
+The package relies on a [submission
+template](https://github.com/mschubert/clustermq/blob/master/inst/SLURM.tmpl),
+which by default submits Slurm jobs as a job array. As we need to supply an
+account name, and the policy on Sulis is to use tasks whenever possible, we
+should modify the submission template to:
+
+* Include the right budgeting account
+* Load the right modules in the submission script
+* Use `srun` with multiple tasks instead of the job array
+
+The new template should look something like this:
+
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH --account={{ account | su105 }}
+#SBATCH --job-name={{ job_name }}
+#SBATCH --tasks={{ n_jobs }}
+#SBATCH --mem-per-cpu={{ memory | 1024M }}
+#SBATCH --cpus-per-task={{ cores | 1 }}
+
+CMQ_AUTH={{ auth }} srun R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+When can then use this newly created template by:
+
+```{r eval=FALSE}
+options(clustermq.template = "/path/to/updated/template")
+```
+
+This should make the above example run. More information is available at the
+[User Guide
+vignette](https://mschubert.github.io/clustermq/articles/userguide.html).
+
+#### Exercise
+
+* Run the above `mcp` example using one interactive "master" job (e.g. using the
+  R integration with `nvim`) and
+  * Run the workers with `slurmR`
+  * Run the workers with `clustermq`
