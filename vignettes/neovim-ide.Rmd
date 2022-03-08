@@ -42,8 +42,97 @@ knitr::opts_chunk$set(
 
 ## Editing R scripts using Neovim
 
+#### Configuration
+
+For this, we edit the file `~/.config/nvim/init.vim` (create the directory
+first using `mkdir -p`) to include:
+
+```{vim eval=FALSE}
+set expandtab       " tab as spaces (optional)
+set shiftwidth=4    " shift by 4 spaces
+set tabstop=4       " tab by 4 spaces
+set smarttab        " tab to same positions
+set autoindent      " automatic indentation
+set mouse=a         " be able to use mouse clicks
+
+set nobackup        " use an undo file instead of backup files
+set undofile
+set undodir=~/.config/nvim/undo
+
+"colorscheme wombat " uncomment this after installing the plugin
+
+" uncomment after installing Nvim-R
+"let g:R_assign = 0 " if using = instead of <- for assignemnt
+"let g:R_cmd = "module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2 && srun --account su105 --pty R"
+"vmap <Space> <Plug>RDSendSelection " use <Space> key to send a selection to R
+"nmap <Space> <Plug>RDSendLine      " use <Space> key to send a line to R
+```
+
+#### Plugins
+
+(Neo)vim and emacs are powerful editors that have many useful functions not only
+for text editing, but also interactive development in R and other languages.
+
+The functionality for this is provided by plugins. For emacs this is mainly ESS
+(emacs speaks statistics), and for nvim we use the plugin manager `plug`, that
+we can install using the following lines of code:
+
+```{sh eval=FALSE}
+curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+```
+
+This will copy the file `plug.vim` from Github into your
+*~/.local/share/nvim/site/autoload* directory.
+
+*Note*: before executing bits of code from the internet, make sure they are from
+trustworthy sources. In this case, it comes from the
+[nvim-plug](https://github.com/junegunn/vim-plug) Github repository, which is
+the official source.
+
+We will add the following plugins:
+
+* Nvim-R
+* YouCompleteMe
+* Wombat color scheme
+
+For this, we add to the file `~/.config/nvim/init.vim`:
+
+```{vim eval=FALSE}
+call plug#begin()
+    Plug 'sheerun/vim-wombat-scheme'
+    Plug 'jalvesaq/Nvim-R'
+    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+call plug#end()
+```
+
+Note that we need Python and pynvim for this to work:
+
+```{sh eval=FALSE}
+module load GCCcore/11.2.0 Python/3.9.6
+pip install --user pynvim
+```
+
+We can then install the plugins using:
+
+```{vim eval=FALSE}
+:PlugInstall
+```
+
+#### Using R within nvim
+
+Using the `Nvim-R` plugin, we can access R directly from nvim. For this, we can
+open any `.r` file, and then type <kbd>&grave;</kbd><kbd>r</kbd><kbd>f</kbd>.
+
+We can now edit the file in the editor as we did before, but in addition send
+lines to R via <kbd>Space</kbd>, or is the terminal directly by selecting it
+with the mouse (or <kbd>Ctrl</kbd>+<kbd>w</kbd> followed by arrow keys).
+
+Because we added an `srun` to the `R_app`, we can edit files on the login node,
+but if we start up R this way the actual computations will be run in an
+interactive job.
+
 ## Persistent sessions with `tmux`
 
 ```{sh eval=FALSE}
 ```
-
