@@ -103,11 +103,120 @@ kbd {
 }
 </style>
 <div class="section level2">
-<h2 id="section">…<a class="anchor" aria-label="anchor" href="#section"></a>
+<h2 id="change-points-in-a-time-course">Change points in a time course<a class="anchor" aria-label="anchor" href="#change-points-in-a-time-course"></a>
 </h2>
+<p>In order to not only use <code><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep()</a></code> but do some actual computations, we chose as a toy problem the inference of change points in a time course with repeated observations of the same measurement. First, we will start off with simulating data that has an increasing integer <code>x</code> coordinate (time point) and a continuous <code>y</code> coordinate (observation value).</p>
+<p>We will then use the <code>mcp</code> package to detect a point in <code>x</code> where the value of <code>y</code> changes abruptly. This package is able to infer many different kinds of change points. Here, we make use of changing intercepts with constant, normally distributed noise. The package is built on <code>rjags</code>, which uses a Gibbs sampling Markov-Chain Monte Carlo (MCMC).</p>
+<p>These computations are usually computationally expensive, but the individual sampling chains are independent of each other. This makes this kind of problem amenable to extensive parallelization.</p>
+<p>Fortunately, the <code>rjags</code> package is already provided as a module, so we can load it using the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load rjags/4-10-R-4.1.2</span></code></pre></div>
+<p>After running this, it should be available from within R via <code><a href="https://mcmc-jags.sourceforge.io" class="external-link">library(rjags)</a></code>. We still need to <code>install.packages("mcp")</code>, but as this does not require external tools it should work without issues. Note that the system-wide R package library is not writable for individual users, so you have to use your user library in your home directory (R will prompt you to do this).</p>
 </div>
-  </main>
+<div class="section level2">
+<h2 id="creating-a-function-to-simulate-data">Creating a function to simulate data<a class="anchor" aria-label="anchor" href="#creating-a-function-to-simulate-data"></a>
+</h2>
+<p>We can use the following function to simulate our data:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">simulate_data</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">=</span><span class="fl">1</span>, <span class="va">len</span><span class="op">=</span><span class="fl">1000</span>, <span class="va">bps</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="co"># simulate one data set with random break points and y coordinates</span>
+    <span class="va">simulate_one</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
+        <span class="va">sim</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">len</span><span class="op">)</span>, y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">len</span><span class="op">)</span><span class="op">)</span>
+        <span class="kw">for</span> <span class="op">(</span><span class="va">bp</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">bps</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+            <span class="va">loc</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">len</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>
+            <span class="va">sim</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="va">loc</span><span class="op">:</span><span class="va">len</span><span class="op">]</span> <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="va">loc</span><span class="op">:</span><span class="va">len</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+        <span class="op">}</span>
+        <span class="va">sim</span>
+    <span class="op">}</span>
+
+    <span class="co"># if we simulate one data set, return a data.frame, otherwise a list thereof</span>
+    <span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="va">n</span>, <span class="fu">simulate_one</span><span class="op">(</span><span class="op">)</span>, simplify<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
+    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+        <span class="va">res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
+    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="va">res</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
+<p>This will randomly generate one sample with our <code>x</code> and <code>y</code> coordinates. The resulting data should look something like this:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim</span> <span class="op">=</span> <span class="fu">simulate_data</span><span class="op">(</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></code></pre></div>
+<p><img src="breakpt-ex_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="running-break-point-inference">Running break point inference<a class="anchor" aria-label="anchor" href="#running-break-point-inference"></a>
+</h2>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lindeloev.github.io/mcp/" class="external-link">mcp</a></span><span class="op">)</span>
+
+<span class="va">run_mcp</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="op">{</span>
+    <span class="co"># one unbroken segment, 2 segments with one break point, 3 segments 2 bps</span>
+    <span class="va">mods</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span>,
+                <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>, <span class="op">~</span> <span class="fl">1</span><span class="op">)</span>,
+                <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span>, <span class="op">~</span> <span class="fl">1</span>, <span class="op">~</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+
+    <span class="co"># fit all three models, select the best using leave-one-out</span>
+    <span class="va">fits</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">mods</span>, <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="fu">mcp</span><span class="fu">::</span><span class="fu"><a href="https://lindeloev.github.io/mcp/reference/mcp.html" class="external-link">mcp</a></span><span class="op">(</span><span class="va">m</span>, data<span class="op">=</span><span class="va">sim</span>, par_x<span class="op">=</span><span class="st">"x"</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">compare</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu">loo</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">fits</span>, <span class="fu">mcp</span><span class="fu">::</span><span class="va"><a href="https://lindeloev.github.io/mcp/reference/criterion.html" class="external-link">loo</a></span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">best</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">compare</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
+    <span class="va">fits</span><span class="op">[[</span><span class="va">best</span><span class="op">]</span><span class="op">]</span>
+<span class="op">}</span></code></pre></div>
+<p>The resulting model should look something like this:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">mod</span> <span class="op">=</span> <span class="fu">run_mcp</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>
+<span class="co">#&gt; Compiling model graph</span>
+<span class="co">#&gt;    Resolving undeclared variables</span>
+<span class="co">#&gt;    Allocating nodes</span>
+<span class="co">#&gt; Graph information:</span>
+<span class="co">#&gt;    Observed stochastic nodes: 1000</span>
+<span class="co">#&gt;    Unobserved stochastic nodes: 2</span>
+<span class="co">#&gt;    Total graph size: 5019</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Initializing model</span>
+<span class="co">#&gt; Finished sampling in 18.9 seconds</span>
+<span class="co">#&gt; Compiling model graph</span>
+<span class="co">#&gt;    Resolving undeclared variables</span>
+<span class="co">#&gt;    Allocating nodes</span>
+<span class="co">#&gt; Graph information:</span>
+<span class="co">#&gt;    Observed stochastic nodes: 1000</span>
+<span class="co">#&gt;    Unobserved stochastic nodes: 4</span>
+<span class="co">#&gt;    Total graph size: 12020</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Initializing model</span>
+<span class="co">#&gt; Finished sampling in 71.3 seconds</span>
+<span class="co">#&gt; Compiling model graph</span>
+<span class="co">#&gt;    Resolving undeclared variables</span>
+<span class="co">#&gt;    Allocating nodes</span>
+<span class="co">#&gt; Graph information:</span>
+<span class="co">#&gt;    Observed stochastic nodes: 1000</span>
+<span class="co">#&gt;    Unobserved stochastic nodes: 6</span>
+<span class="co">#&gt;    Total graph size: 17028</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Initializing model</span>
+<span class="co">#&gt; Finished sampling in 150.3 seconds</span>
+<span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
+
+<span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
+<span class="fu"><a href="https://lindeloev.github.io/mcp/reference/plot.mcpfit.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
+<p><img src="breakpt-ex_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<div class="section level4">
+<h4 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
+</h4>
+<ul>
+<li>Use your editor to create the break point simulation script (hint: you can use <kbd>Esc</kbd>+<code>:set paste</code> in nvim to copy-paste the text without automatic indentation and <code>:set nopaste</code> to return)</li>
+<li>Simulate data for one and two break points</li>
+<li>Start an interactive job with 1 task and 5 cores</li>
+<li>Run the <code>mcp</code> inference script to try and estimate the breakpoints from the data. Do they match to the parameters of your simulation? (hint: you can use the <code>plot</code> function on an <code>mcp</code> model object)</li>
+<li>Which options do you see to make this code run faster? (hint: there is both <code>mcp</code>-provided parallelism and and sequential steps in the inference code)</li>
+<li>How much runtime can you save by running computations in parallel?</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="bigger-data-sets">Bigger data sets<a class="anchor" aria-label="anchor" href="#bigger-data-sets"></a>
+</h2>
+</div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
