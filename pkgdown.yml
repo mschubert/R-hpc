@@ -2,9 +2,9 @@ pandoc: 2.14.2
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
+  breakpt-ex: breakpt-ex.html
   neovim-ide: neovim-ide.html
   quickstart: quickstart.html
-  rscripts: rscripts.html
   workflows: workflows.html
-last_built: 2022-03-07T16:36Z
+last_built: 2022-03-08T09:50Z
 

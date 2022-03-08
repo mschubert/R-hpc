@@ -41,10 +41,10 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/neovim-ide.html">R on HPC</a>
+    <a class="dropdown-item" href="../articles/breakpt-ex.html">Breakpoint example</a>
+    <a class="dropdown-item" href="../articles/neovim-ide.html">Neovim as IDE</a>
     <a class="dropdown-item" href="../articles/quickstart.html">Quick Start</a>
-    <a class="dropdown-item" href="../articles/rscripts.html">R on HPC</a>
-    <a class="dropdown-item" href="../articles/workflows.html">R on HPC</a>
+    <a class="dropdown-item" href="../articles/workflows.html">Workflows</a>
   </div>
 </li>
       </ul>
@@ -102,15 +102,15 @@ kbd {
     white-space: nowrap;
 }
 </style>
-<div class="section level3">
-<h3 id="prerequesites">Prerequesites<a class="anchor" aria-label="anchor" href="#prerequesites"></a>
-</h3>
+<div class="section level2">
+<h2 id="prerequesites">Prerequesites<a class="anchor" aria-label="anchor" href="#prerequesites"></a>
+</h2>
 <p>Working on High-Performance Computing (HPC) facilities, we primarily interface with the systems via a command-line shell. We expect the people in this course to have a wide range of expertise and different starting points concerning the use of the command-line, which will make it easier or more challenging for participants, depending on where they are coming from.</p>
 <p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later. We expect that macOS and Linux users are already familiar with their terminal.</p>
 </div>
-<div class="section level3">
-<h3 id="connecting-to-the-computing-cluster">Connecting to the computing cluster<a class="anchor" aria-label="anchor" href="#connecting-to-the-computing-cluster"></a>
-</h3>
+<div class="section level2">
+<h2 id="connecting-to-the-computing-cluster">Connecting to the computing cluster<a class="anchor" aria-label="anchor" href="#connecting-to-the-computing-cluster"></a>
+</h2>
 <p>Command-line connections to the HPC are established using the Secure Shell tool (SSH). From a terminal, you can connect to Sulis using the following line:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> <span class="op">&lt;</span>your keyfile<span class="op">&gt;</span> <span class="op">&lt;</span>user<span class="op">&gt;</span>@login.sulis.ac.uk</span></code></pre></div>
 <p>Since this is a bit tedious, we can outsource most of the information to a <code>~/.ssh/config</code> file with the following contents:</p>
@@ -124,18 +124,18 @@ kbd {
 <p>This will come in handy when not only connecting to the HPC once, but also copying files between your local machine and the HPC.</p>
 <p>Note, however, that in both cases you will still need to decrypt your private key file with your passphrase (which, at least on macOS and Linux can be automated using your OS keychain) and the 2FA token once a day.</p>
 </div>
-<div class="section level3">
-<h3 id="setting-up-r">Setting up R<a class="anchor" aria-label="anchor" href="#setting-up-r"></a>
-</h3>
+<div class="section level2">
+<h2 id="setting-up-r">Setting up R<a class="anchor" aria-label="anchor" href="#setting-up-r"></a>
+</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># /usr/bin/which: no R in [...]</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># /sulis/easybuild/software/R/4.1.2-foss-2021b/bin/R</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="running-an-interactive-job">Running an interactive job<a class="anchor" aria-label="anchor" href="#running-an-interactive-job"></a>
-</h3>
+<div class="section level2">
+<h2 id="running-an-interactive-job">Running an interactive job<a class="anchor" aria-label="anchor" href="#running-an-interactive-job"></a>
+</h2>
 <p>The simplest way to request an interactive job is to use Slurm’s <code>srun</code> command where we specify that we want to run a shell (specified by the <code>$SHELL</code> environment variable) that is connected to our terminal input and output (<code>--pty</code>). In addition, we need to specify the account our requested resources will be budgeted to (<code>--account</code>) We can do that by running:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">--account</span> su105 <span class="at">--pty</span> <span class="va">$SHELL</span></span></code></pre></div>
 <p>You will see that your command prompt changes from <code>user@login</code> to <code>user$nodeXX</code>, which means that we are now connected to a compute node instead of the login node. Here, we are allowed to run heavy computations within the resource constraints that we specified.</p>
@@ -172,9 +172,9 @@ kbd {
 <span class="va">x</span> <span class="op">*</span> <span class="va">y</span>
 <span class="co">#&gt; [1] 15</span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="copying-files">Copying files<a class="anchor" aria-label="anchor" href="#copying-files"></a>
-</h3>
+<div class="section level2">
+<h2 id="copying-files">Copying files<a class="anchor" aria-label="anchor" href="#copying-files"></a>
+</h2>
 <p>There are different options for getting your files to the compute cluster. One option is to edit all files locally, and then copy them over SSH. So, for instance, one could have a local file <code>text.txt</code> and copy it over:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> text.txt host:</span></code></pre></div>
 <p>where you specified <code>host</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end:</p>
@@ -184,9 +184,9 @@ kbd {
 <p>Another, and maybe better alternative is the <code>rsync</code> command. This will keep timestamps intact, and can be used to copy only files that have updated timestamps (<code>-u</code>) compared to the local files (<code>-v</code> will print the files while copying):</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> host:test.txt .</span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="editing-files">Editing files<a class="anchor" aria-label="anchor" href="#editing-files"></a>
-</h3>
+<div class="section level2">
+<h2 id="editing-files">Editing files<a class="anchor" aria-label="anchor" href="#editing-files"></a>
+</h2>
 <p>For either making small changes or iterative work, it is often more convenient to edit files directly on the computing cluster instead of editing them locally and then copy them.</p>
 <p>There are multiple text-based editors that work in a terminal, such as <code>nano</code>, <code>emacs</code> and <code>vim</code>. <code>nano</code> is a minimalist editor without any special features, and is often recommended to users new to the terminal. The problem with that is that we get very quickly stuck at a local optimum, where we can make simple changes to a file, but will never get features such as syntax highlighting. The other two editors on the other hand either have or can be extended to have any/every feature imaginable.</p>
 <p>This is why for this course, we will show some basic features of <code>nvim</code> (<code>neovim</code>, a modern implementation of <code>vim</code>) instead. If you are already a user of <code>emacs</code>, please feel free to use this editor instead.</p>
@@ -199,9 +199,9 @@ kbd {
 <p>This is all you need to know to make <code>vim</code> as useful as <code>nano</code>. However, if we now for instance edit an <code>.r</code> file we also get syntax highlighting. This feature alone makes it worth to use <code>nvim</code> instead of <code>nano</code>.</p>
 <p>You can explore more features by running <code>vimtutor</code> from the command-line, which is an interactive tool to familiarize yourself with how to use it effectively.</p>
 </div>
-<div class="section level3">
-<h3 id="compute-resources">Compute resources<a class="anchor" aria-label="anchor" href="#compute-resources"></a>
-</h3>
+<div class="section level2">
+<h2 id="compute-resources">Compute resources<a class="anchor" aria-label="anchor" href="#compute-resources"></a>
+</h2>
 <p>For now, we have submitted our job while specifying only the minimum required parameters and relying on the defaults for others. For instance, we have not specific a <code>partition</code>, which is one of several job queues that we can submit our jobs to. To get an overview of which are available, we can use the <code>sinfo</code> command:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sinfo</span></span></code></pre></div>
 <p>Here, we see the different partitions listed and a number of nodes associated with each of them, including the walltime (maximum amount of time that a job can request) for each queue. You will see that one queue is marked with a <code>*</code>. This denotes the default queue, which we have been using by not specifying any particular queue via the <code>--partition</code> parameter.</p>
@@ -209,9 +209,9 @@ kbd {
 <div class="sourceCode" id="cb17"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sacctmgr</span> show associations where user=<span class="op">&lt;</span>your user name<span class="op">&gt;</span></span></code></pre></div>
 <p>You will likely only belong to one account, or project, at this time (which was the one created for this course).</p>
 </div>
-<div class="section level3">
-<h3 id="job-submission-scripts">Job submission scripts<a class="anchor" aria-label="anchor" href="#job-submission-scripts"></a>
-</h3>
+<div class="section level2">
+<h2 id="job-submission-scripts">Job submission scripts<a class="anchor" aria-label="anchor" href="#job-submission-scripts"></a>
+</h2>
 <p>Usually, you will want to run more complex computations than can be specified with a single <code>srun</code>. For running multiple commands on multiple hosts, it is often better to specify the resource requirements and exact commands using a job submission script. This may look like the following:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
@@ -254,19 +254,19 @@ kbd {
 <li>
 <code>srun</code> specifies the command to be run; it is not required for running individual computations, but helps set up parallel helpers, such as running the call once per task, or e.g. setting up MPI if this is used</li>
 </ul>
-<div class="section level4">
-<h4 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
-</h4>
+<div class="section level3">
+<h3 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
+</h3>
 <ul>
 <li>Create a batch submission script like the one above using the command-line editor on the cluster</li>
 <li>Submit it using <code>sbatch &lt;script&gt;</code>, both with and without the <code>srun</code>. What changes?</li>
-<li>What happens with we change the <code>ntasks</code> paramter to <code>2</code>, both with and without the <code>srun</code> command?</li>
+<li>What happens with we change the <code>ntasks</code> parameter to <code>2</code>, both with and without the <code>srun</code> command?</li>
 </ul>
 </div>
 </div>
-<div class="section level3">
-<h3 id="r-on-hpc">R on HPC<a class="anchor" aria-label="anchor" href="#r-on-hpc"></a>
-</h3>
+<div class="section level2">
+<h2 id="r-on-hpc">R on HPC<a class="anchor" aria-label="anchor" href="#r-on-hpc"></a>
+</h2>
 <p>R’s best developed parallel capabilities is running computations on multiple cores. Here, we will briefly outline which approaches are commonly used. For simplicity, let’s consider a simple R function that sleeps for a couple of seconds:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fsleep</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
@@ -302,12 +302,12 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.005   0.000  10.017</span></code></pre></div>
+<span class="co">#&gt;   0.000   0.005  10.016</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makese sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.003   0.010   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.014   0.000   5.020</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
@@ -319,7 +319,8 @@ kbd {
 </ul>
 </div>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
