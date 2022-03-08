@@ -105,11 +105,68 @@ kbd {
 <div class="section level2">
 <h2 id="editing-r-scripts-using-neovim">Editing R scripts using Neovim<a class="anchor" aria-label="anchor" href="#editing-r-scripts-using-neovim"></a>
 </h2>
+<div class="section level4">
+<h4 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
+</h4>
+<p>For this, we edit the file <code>~/.config/nvim/init.vim</code> (create the directory first using <code>mkdir -p</code>) to include:</p>
+<pre class="vim"><code>set expandtab       " tab as spaces (optional)
+set shiftwidth=4    " shift by 4 spaces
+set tabstop=4       " tab by 4 spaces
+set smarttab        " tab to same positions
+set autoindent      " automatic indentation
+set mouse=a         " be able to use mouse clicks
+
+set nobackup        " use an undo file instead of backup files
+set undofile
+set undodir=~/.config/nvim/undo
+
+"colorscheme wombat " uncomment this after installing the plugin
+
+" uncomment after installing Nvim-R
+"let g:R_assign = 0 " if using = instead of &lt;- for assignemnt
+"let g:R_cmd = "module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2 &amp;&amp; srun --account su105 --pty R"
+"vmap &lt;Space&gt; &lt;Plug&gt;RDSendSelection " use &lt;Space&gt; key to send a selection to R
+"nmap &lt;Space&gt; &lt;Plug&gt;RDSendLine      " use &lt;Space&gt; key to send a line to R</code></pre>
+</div>
+<div class="section level4">
+<h4 id="plugins">Plugins<a class="anchor" aria-label="anchor" href="#plugins"></a>
+</h4>
+<p>(Neo)vim and emacs are powerful editors that have many useful functions not only for text editing, but also interactive development in R and other languages.</p>
+<p>The functionality for this is provided by plugins. For emacs this is mainly ESS (emacs speaks statistics), and for nvim we use the plugin manager <code>plug</code>, that we can install using the following lines of code:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fLo</span> ~/.local/share/nvim/site/autoload/plug.vim <span class="at">--create-dirs</span> <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim<span class="st">'</span></span></code></pre></div>
+<p>This will copy the file <code>plug.vim</code> from Github into your <em>~/.local/share/nvim/site/autoload</em> directory.</p>
+<p><em>Note</em>: before executing bits of code from the internet, make sure they are from trustworthy sources. In this case, it comes from the <a href="https://github.com/junegunn/vim-plug" class="external-link">nvim-plug</a> Github repository, which is the official source.</p>
+<p>We will add the following plugins:</p>
+<ul>
+<li>Nvim-R</li>
+<li>YouCompleteMe</li>
+<li>Wombat color scheme</li>
+</ul>
+<p>For this, we add to the file <code>~/.config/nvim/init.vim</code>:</p>
+<pre class="vim"><code>call plug#begin()
+    Plug 'sheerun/vim-wombat-scheme'
+    Plug 'jalvesaq/Nvim-R'
+    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+call plug#end()</code></pre>
+<p>Note that we need Python and pynvim for this to work:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCCcore/11.2.0 Python/3.9.6</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">--user</span> pynvim</span></code></pre></div>
+<p>We can then install the plugins using:</p>
+<pre class="vim"><code>:PlugInstall</code></pre>
+</div>
+<div class="section level4">
+<h4 id="using-r-within-nvim">Using R within nvim<a class="anchor" aria-label="anchor" href="#using-r-within-nvim"></a>
+</h4>
+<p>Using the <code>Nvim-R</code> plugin, we can access R directly from nvim. For this, we can open any <code>.r</code> file, and then type <kbd>`</kbd><kbd>r</kbd><kbd>f</kbd>.</p>
+<p>We can now edit the file in the editor as we did before, but in addition send lines to R via <kbd>Space</kbd>, or is the terminal directly by selecting it with the mouse (or <kbd>Ctrl</kbd>+<kbd>w</kbd> followed by arrow keys).</p>
+<p>Because we added an <code>srun</code> to the <code>R_app</code>, we can edit files on the login node, but if we start up R this way the actual computations will be run in an interactive job.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="persistent-sessions-with-tmux">Persistent sessions with <code>tmux</code><a class="anchor" aria-label="anchor" href="#persistent-sessions-with-tmux"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
