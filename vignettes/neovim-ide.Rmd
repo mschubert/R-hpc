@@ -68,6 +68,27 @@ type `source ~/.bashrc` to reload it. Note, however, that loading these modules
 will result in a bit of a slowdown to establish the connection to the login
 node.
 
+We can also change some other things, like adding colors to the prompt and have
+it display the current directory instead of just the folder name:
+
+```{sh eval=FALSE}
+export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h\[\e[1;31m\](sulis)\[\e[0m\]:\[\033[33;1m\]\w\[\033[m\]\$ "
+```
+
+And add some useful aliases to make listing files and navigating between
+different directories a bit easier:
+
+```{sh eval=FALSE}
+alias l='ls -lh'
+alias ll='ls -lah'
+alias .='pwd'
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...=' cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+```
+
 ## Editing R scripts using Neovim
 
 #### Configuration
@@ -90,7 +111,7 @@ set undodir=~/.config/nvim/undo
 "colorscheme wombat " uncomment this after installing the plugin
 
 " uncomment after installing Nvim-R
-"let g:R_assign = 0 " if using = instead of <- for assignment
+"let g:R_assign = 0 " do (not) map _ to <- for assignment
 "let g:R_cmd = "srun --account su105 --pty R"
 "vmap <Space> <Plug>RDSendSelection " use <Space> key to send a selection to R
 "nmap <Space> <Plug>RDSendLine      " use <Space> key to send a line to R
