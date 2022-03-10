@@ -40,6 +40,34 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Making R and Python available by default
+
+There are certain tools that we expect to use often but that are only available
+to load via modules. For instance, we are likely to very often make use of R,
+python, a compiler (GCC), or an editor (Neovim).
+
+When we connect to the computing cluster, we open a shell, i.e. the command-line
+interface there. The default for this is `bash`, which is usually available on
+all Unix-like systems. (However, it is no longer default on macOS in favor of
+`zsh`.)
+
+Every time we start `bash` on the login node, it runs its configuration file,
+`~/.bashrc`. To automatically load our standard tool set when we connect, we can
+add the `module load` commands to this file:
+
+```{sh eval=FALSE}
+# User specific aliases and functions
+
+module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2
+module load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1
+module load Neovim/0.6.1
+```
+
+After we edited this file, we can either close the connection and reconnect, or
+type `source ~/.bashrc` to reload it. Note, however, that loading these modules
+will result in a bit of a slowdown to establish the connection to the login
+node.
+
 ## Editing R scripts using Neovim
 
 #### Configuration
@@ -62,8 +90,8 @@ set undodir=~/.config/nvim/undo
 "colorscheme wombat " uncomment this after installing the plugin
 
 " uncomment after installing Nvim-R
-"let g:R_assign = 0 " if using = instead of <- for assignemnt
-"let g:R_cmd = "module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2 && srun --account su105 --pty R"
+"let g:R_assign = 0 " if using = instead of <- for assignment
+"let g:R_cmd = "srun --account su105 --pty R"
 "vmap <Space> <Plug>RDSendSelection " use <Space> key to send a selection to R
 "nmap <Space> <Plug>RDSendLine      " use <Space> key to send a line to R
 ```
@@ -85,7 +113,7 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 This will copy the file `plug.vim` from Github into your
 *~/.local/share/nvim/site/autoload* directory.
 
-*Note*: before executing bits of code from the internet, make sure they are from
+*Note:* before executing bits of code from the internet, make sure they are from
 trustworthy sources. In this case, it comes from the
 [nvim-plug](https://github.com/junegunn/vim-plug) Github repository, which is
 the official source.
@@ -106,14 +134,14 @@ call plug#begin()
 call plug#end()
 ```
 
-Note that we need Python and pynvim for this to work:
+Note that we need Python and `pynvim` for this to work:
 
 ```{sh eval=FALSE}
-module load GCCcore/11.2.0 Python/3.9.6
+module load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1
 pip install --user pynvim
 ```
 
-We can then install the plugins using:
+We can then install the plugins in Neovim using <kbd>Esc</kbd> and:
 
 ```{vim eval=FALSE}
 :PlugInstall
@@ -121,8 +149,10 @@ We can then install the plugins using:
 
 #### Using R within nvim
 
+Uncomment the lines previously commented in `~/.config/nvim/init.vim`.
+
 Using the `Nvim-R` plugin, we can access R directly from nvim. For this, we can
-open any `.r` file, and then type <kbd>&grave;</kbd><kbd>r</kbd><kbd>f</kbd>.
+open any `.r` file, and then type <kbd>\\</kbd><kbd>r</kbd><kbd>f</kbd>.
 
 We can now edit the file in the editor as we did before, but in addition send
 lines to R via <kbd>Space</kbd>, or is the terminal directly by selecting it
@@ -134,5 +164,11 @@ interactive job.
 
 ## Persistent sessions with `tmux`
 
+
+
 ```{sh eval=FALSE}
+# A modified SSH command to start or attach tmux sessions automatically
+ssht() {
+    ssh -t "$1" 'tmux -2 -u attach || tmux -2 -u new'
+}
 ```
