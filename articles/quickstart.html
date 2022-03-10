@@ -103,10 +103,12 @@ kbd {
 }
 </style>
 <div class="section level2">
-<h2 id="prerequesites">Prerequesites<a class="anchor" aria-label="anchor" href="#prerequesites"></a>
+<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
 </h2>
 <p>Working on High-Performance Computing (HPC) facilities, we primarily interface with the systems via a command-line shell. We expect the people in this course to have a wide range of expertise and different starting points concerning the use of the command-line, which will make it easier or more challenging for participants, depending on where they are coming from.</p>
-<p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later. We expect that macOS and Linux users are already familiar with their terminal.</p>
+<p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation instructions available here</a>.</p>
+<p>Likely, macOS and Linux users are already familiar with their terminal.</p>
+<p><em>Note:</em> On WSL, your home directory (every time we refer to paths starting with <code>~</code>) will likely be in a folder like <code>/mnt/c/Users/&lt;UserName&gt;</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="connecting-to-the-computing-cluster">Connecting to the computing cluster<a class="anchor" aria-label="anchor" href="#connecting-to-the-computing-cluster"></a>
@@ -123,6 +125,7 @@ kbd {
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> sulis</span></code></pre></div>
 <p>This will come in handy when not only connecting to the HPC once, but also copying files between your local machine and the HPC.</p>
 <p>Note, however, that in both cases you will still need to decrypt your private key file with your passphrase (which, at least on macOS and Linux can be automated using your OS keychain) and the 2FA token once a day.</p>
+<p>Login to Sulis is documented here in more detail: <a href="https://sulis-hpc.github.io/gettingstarted/connecting/" class="external-link uri">https://sulis-hpc.github.io/gettingstarted/connecting/</a></p>
 </div>
 <div class="section level2">
 <h2 id="setting-up-r">Setting up R<a class="anchor" aria-label="anchor" href="#setting-up-r"></a>
@@ -179,7 +182,7 @@ kbd {
 <div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> text.txt host:</span></code></pre></div>
 <p>where you specified <code>host</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> host:test.txt .</span></code></pre></div>
-<p>Here, the <code>scp</code> command looks for <code>test.sh</code> in your home directory (<code>~</code>; this is the default if no directory is specified) and will copy it to your current directory (<code>.</code>).</p>
+<p>Here, the <code>scp</code> command looks for <code>test.txt</code> in your home directory (<code>~</code>; this is the default if no directory is specified) and will copy it to your current directory (<code>.</code>).</p>
 <p>If you want to copy directories you need to use recursive copying, i.e. <code>scp -r</code>.</p>
 <p>Another, and maybe better alternative is the <code>rsync</code> command. This will keep timestamps intact, and can be used to copy only files that have updated timestamps (<code>-u</code>) compared to the local files (<code>-v</code> will print the files while copying):</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> host:test.txt .</span></code></pre></div>
@@ -194,7 +197,7 @@ kbd {
 <div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nvim</span> myfile.txt</span></code></pre></div>
 <p>You will see that the console gets cleared, and we are shown the contents of an empty file instead. Try typing a couple of <kbd>a</kbd> in the file:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aaaa</span></span></code></pre></div>
-<p>You will see the characters show up, as you would from another text editor as well. Notice, however, that the first <kbd>a</kbd> you typed did not show up, only all subsequent <kbd>a</kbd>s. This is because this editor has a “normal” and an “edit” mode. By typing the first <kbd>a</kbd>, we switched from the first to the latter.</p>
+<p>You will see the characters show up, as you would in other editor as well. Notice, however, that the first <kbd>a</kbd> you typed did not show up, only all subsequent <kbd>a</kbd>s. This is because this editor has a “normal” and an “edit” mode. By typing the first <kbd>a</kbd>, we switched from the former to the latter.</p>
 <p>We can now use <kbd>Esc</kbd> to switch back from the edit to the normal mode. In normal mode, we can type <code>:w</code> <kbd>Enter</kbd> to write the file, or <code>:wq</code> to write the file and quit the editor. <code>:q!</code> will exit without saving any changes.</p>
 <p>This is all you need to know to make <code>vim</code> as useful as <code>nano</code>. However, if we now for instance edit an <code>.r</code> file we also get syntax highlighting. This feature alone makes it worth to use <code>nvim</code> instead of <code>nano</code>.</p>
 <p>You can explore more features by running <code>vimtutor</code> from the command-line, which is an interactive tool to familiarize yourself with how to use it effectively.</p>
@@ -240,7 +243,7 @@ kbd {
 <li>
 <code>#SBATCH --account</code> is needed again to budget the resources correctly</li>
 <li>
-<code>#SBATCH --parititon</code> this time we specific the <code>compute</code> partition explicitly</li>
+<code>#SBATCH --partition</code> this time we specific the <code>compute</code> partition explicitly</li>
 <li>
 <code>#SBATCH --ntasks</code> lists the tasks (computations) this job contains</li>
 <li>
@@ -302,12 +305,12 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.005   0.000  10.017</span></code></pre></div>
-<p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makese sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
+<span class="co">#&gt;   0.005   0.000  10.018</span></code></pre></div>
+<p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.004   0.010   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.003   0.010   5.020</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
