@@ -185,11 +185,71 @@ interactive job.
 
 ## Persistent sessions with `tmux`
 
-
+So far, we have created a new terminal session each time we connected to the
+login node. There are cases where we may instead want to continue to work where
+we left off previously. There are tools that create a "persistent" session on
+the login node that we can disconnect from and later connect to without losing
+our work session. A well-known tool for this is `screen`, but more recently
+there is `tmux`. `tmux` is installed on the login node, so we can use it out of
+the box by typing:
 
 ```{sh eval=FALSE}
-# A modified SSH command to start or attach tmux sessions automatically
+tmux new
+```
+
+On a first view, not much has changed. In addition to our normal terminal
+prompt, there is now a status line at the bottom of the screen. We can now
+perform some operations, like typing `ls` and `pwd`. When we want to disconnect,
+we can use the keys <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>d</kbd> or type:
+
+```{sh eval=FALSE}
+tmux detach
+```
+
+This will close the `tmux` session. We can now disconnect from the login node,
+later reconnect, and re-attach to the same session by typing:
+
+```{sh eval=FALSE}
+tmux attach -t 0
+```
+
+`0` in this case the the (automatic) name of the session we created previously.
+In addition, we can also split our terminal in 2 vertical "panes" using
+<kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>%</kbd> or create a new "window" using
+<kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>c</kbd>. The panes, windows, and open
+applications (e.g. a text editor) will be waiting for us each time we detach and
+re-attach to the session. <kbd>Ctrl</kbd>+<kbd>b</kbd> is the common prefix, to
+be typed before any other tmux command.
+
+#### An `ssht` alias to automatically connect to tmux
+
+We can define the following function to automatically connect to (or create) a
+`tmux` session when we type `ssht sulis` instead of `ssh sulis`. If we are using
+the `bash` shell locally as well, we can add these lines to our _local_
+`~/.bashrc`:
+
+```{sh eval=FALSE}
 ssht() {
     ssh -t "$1" 'tmux -2 -u attach || tmux -2 -u new'
 }
+```
+
+#### Making `tmux` easier to use
+
+There are are a lot of different commands to remember, especially when first
+starting to use `tmux`. We can add some configuration options in `~/.tmux.conf`
+to make using it a bit more intuitive:
+
+```{sh eval=FALSE}
+bind C-a send-prefix    # enable Ctrl+a as prefix for people used to "screen"
+set -g mouse on         # enable mouse clicks to select windows and panes
+set-option -g default-terminal "screen-256color"    # more colors
+
+# easy-to-remember split pane commands
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+
+# swap current pane with the next/previous one
+bind > swap-pane -D
+bind < swap-pane -U
 ```
