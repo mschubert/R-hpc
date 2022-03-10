@@ -103,6 +103,30 @@ kbd {
 }
 </style>
 <div class="section level2">
+<h2 id="making-r-and-python-available-by-default">Making R and Python available by default<a class="anchor" aria-label="anchor" href="#making-r-and-python-available-by-default"></a>
+</h2>
+<p>There are certain tools that we expect to use often but that are only available to load via modules. For instance, we are likely to very often make use of R, python, a compiler (GCC), or an editor (Neovim).</p>
+<p>When we connect to the computing cluster, we open a shell, i.e. the command-line interface there. The default for this is <code>bash</code>, which is usually available on all Unix-like systems. (However, it is no longer default on macOS in favor of <code>zsh</code>.)</p>
+<p>Every time we start <code>bash</code> on the login node, it runs its configuration file, <code>~/.bashrc</code>. To automatically load our standard tool set when we connect, we can add the <code>module load</code> commands to this file:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># User specific aliases and functions</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load Neovim/0.6.1</span></code></pre></div>
+<p>After we edited this file, we can either close the connection and reconnect, or type <code>source ~/.bashrc</code> to reload it. Note, however, that loading these modules will result in a bit of a slowdown to establish the connection to the login node.</p>
+<p>We can also change some other things, like adding colors to the prompt and have it display the current directory instead of just the folder name:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PS1</span><span class="op">=</span><span class="st">"\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h\[\e[1;31m\](sulis)\[\e[0m\]:\[\033[33;1m\]\w\[\033[m\]</span><span class="dt">\$</span><span class="st"> "</span></span></code></pre></div>
+<p>And add some useful aliases to make listing files and navigating between different directories a bit easier:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> l=<span class="st">'ls -lh'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ll=<span class="st">'ls -lah'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> .=<span class="st">'pwd'</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> cd..=<span class="st">'cd ..'</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ..=<span class="st">'cd ..'</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ...=<span class="st">' cd ../..'</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ....=<span class="st">'cd ../../..'</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> .....=<span class="st">'cd ../../../..'</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="editing-r-scripts-using-neovim">Editing R scripts using Neovim<a class="anchor" aria-label="anchor" href="#editing-r-scripts-using-neovim"></a>
 </h2>
 <div class="section level4">
@@ -123,8 +147,8 @@ set undodir=~/.config/nvim/undo
 "colorscheme wombat " uncomment this after installing the plugin
 
 " uncomment after installing Nvim-R
-"let g:R_assign = 0 " if using = instead of &lt;- for assignemnt
-"let g:R_cmd = "module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2 &amp;&amp; srun --account su105 --pty R"
+"let g:R_assign = 0 " do (not) map _ to &lt;- for assignment
+"let g:R_cmd = "srun --account su105 --pty R"
 "vmap &lt;Space&gt; &lt;Plug&gt;RDSendSelection " use &lt;Space&gt; key to send a selection to R
 "nmap &lt;Space&gt; &lt;Plug&gt;RDSendLine      " use &lt;Space&gt; key to send a line to R</code></pre>
 </div>
@@ -133,10 +157,10 @@ set undodir=~/.config/nvim/undo
 </h4>
 <p>(Neo)vim and emacs are powerful editors that have many useful functions not only for text editing, but also interactive development in R and other languages.</p>
 <p>The functionality for this is provided by plugins. For emacs this is mainly ESS (emacs speaks statistics), and for nvim we use the plugin manager <code>plug</code>, that we can install using the following lines of code:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fLo</span> ~/.local/share/nvim/site/autoload/plug.vim <span class="at">--create-dirs</span> <span class="dt">\</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim<span class="st">'</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fLo</span> ~/.local/share/nvim/site/autoload/plug.vim <span class="at">--create-dirs</span> <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim<span class="st">'</span></span></code></pre></div>
 <p>This will copy the file <code>plug.vim</code> from Github into your <em>~/.local/share/nvim/site/autoload</em> directory.</p>
-<p><em>Note</em>: before executing bits of code from the internet, make sure they are from trustworthy sources. In this case, it comes from the <a href="https://github.com/junegunn/vim-plug" class="external-link">nvim-plug</a> Github repository, which is the official source.</p>
+<p><em>Note:</em> before executing bits of code from the internet, make sure they are from trustworthy sources. In this case, it comes from the <a href="https://github.com/junegunn/vim-plug" class="external-link">nvim-plug</a> Github repository, which is the official source.</p>
 <p>We will add the following plugins:</p>
 <ul>
 <li>Nvim-R</li>
@@ -149,16 +173,17 @@ set undodir=~/.config/nvim/undo
     Plug 'jalvesaq/Nvim-R'
     Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
 call plug#end()</code></pre>
-<p>Note that we need Python and pynvim for this to work:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCCcore/11.2.0 Python/3.9.6</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">--user</span> pynvim</span></code></pre></div>
-<p>We can then install the plugins using:</p>
+<p>Note that we need Python and <code>pynvim</code> for this to work:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">--user</span> pynvim</span></code></pre></div>
+<p>We can then install the plugins in Neovim using <kbd>Esc</kbd> and:</p>
 <pre class="vim"><code>:PlugInstall</code></pre>
 </div>
 <div class="section level4">
 <h4 id="using-r-within-nvim">Using R within nvim<a class="anchor" aria-label="anchor" href="#using-r-within-nvim"></a>
 </h4>
-<p>Using the <code>Nvim-R</code> plugin, we can access R directly from nvim. For this, we can open any <code>.r</code> file, and then type <kbd>`</kbd><kbd>r</kbd><kbd>f</kbd>.</p>
+<p>Uncomment the lines previously commented in <code>~/.config/nvim/init.vim</code>.</p>
+<p>Using the <code>Nvim-R</code> plugin, we can access R directly from nvim. For this, we can open any <code>.r</code> file, and then type <kbd>\</kbd><kbd>r</kbd><kbd>f</kbd>.</p>
 <p>We can now edit the file in the editor as we did before, but in addition send lines to R via <kbd>Space</kbd>, or is the terminal directly by selecting it with the mouse (or <kbd>Ctrl</kbd>+<kbd>w</kbd> followed by arrow keys).</p>
 <p>Because we added an <code>srun</code> to the <code>R_app</code>, we can edit files on the login node, but if we start up R this way the actual computations will be run in an interactive job.</p>
 </div>
@@ -166,7 +191,37 @@ call plug#end()</code></pre>
 <div class="section level2">
 <h2 id="persistent-sessions-with-tmux">Persistent sessions with <code>tmux</code><a class="anchor" aria-label="anchor" href="#persistent-sessions-with-tmux"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"></code></pre></div>
+<p>So far, we have created a new terminal session each time we connected to the login node. There are cases where we may instead want to continue to work where we left off previously. There are tools that create a “persistent” session on the login node that we can disconnect from and later connect to without losing our work session. A well-known tool for this is <code>screen</code>, but more recently there is <code>tmux</code>. <code>tmux</code> is installed on the login node, so we can use it out of the box by typing:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> new</span></code></pre></div>
+<p>On a first view, not much has changed. In addition to our normal terminal prompt, there is now a status line at the bottom of the screen. We can now perform some operations, like typing <code>ls</code> and <code>pwd</code>. When we want to disconnect, we can use the keys <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>d</kbd> or type:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> detach</span></code></pre></div>
+<p>This will close the <code>tmux</code> session. We can now disconnect from the login node, later reconnect, and re-attach to the same session by typing:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> attach <span class="at">-t</span> 0</span></code></pre></div>
+<p><code>0</code> in this case the the (automatic) name of the session we created previously. In addition, we can also split our terminal in 2 vertical “panes” using <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>%</kbd> or create a new “window” using <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>c</kbd>. The panes, windows, and open applications (e.g. a text editor) will be waiting for us each time we detach and re-attach to the session. <kbd>Ctrl</kbd>+<kbd>b</kbd> is the common prefix, to be typed before any other tmux command.</p>
+<div class="section level4">
+<h4 id="an-ssht-alias-to-automatically-connect-to-tmux">An <code>ssht</code> alias to automatically connect to tmux<a class="anchor" aria-label="anchor" href="#an-ssht-alias-to-automatically-connect-to-tmux"></a>
+</h4>
+<p>We can define the following function to automatically connect to (or create) a <code>tmux</code> session when we type <code>ssht sulis</code> instead of <code>ssh sulis</code>. If we are using the <code>bash</code> shell locally as well, we can add these lines to our <em>local</em> <code>~/.bashrc</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssht()</span> <span class="kw">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ssh</span> <span class="at">-t</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="st">'tmux -2 -u attach || tmux -2 -u new'</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="making-tmux-easier-to-use">Making <code>tmux</code> easier to use<a class="anchor" aria-label="anchor" href="#making-tmux-easier-to-use"></a>
+</h4>
+<p>There are are a lot of different commands to remember, especially when first starting to use <code>tmux</code>. We can add some configuration options in <code>~/.tmux.conf</code> to make using it a bit more intuitive:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">bind</span> C-a send-prefix    <span class="co"># enable Ctrl+a as prefix for people used to "screen"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-g</span> mouse on         <span class="co"># enable mouse clicks to select windows and panes</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">set-option</span> <span class="at">-g</span> default-terminal <span class="st">"screen-256color"</span>    <span class="co"># more colors</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># easy-to-remember split pane commands</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="bu">bind</span> <span class="kw">|</span> <span class="ex">split-window</span> <span class="at">-h</span> <span class="at">-c</span> <span class="st">"#{pane_current_path}"</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="bu">bind</span> <span class="at">-</span> split-window <span class="at">-v</span> <span class="at">-c</span> <span class="st">"#{pane_current_path}"</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># swap current pane with the next/previous one</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="bu">bind</span> <span class="op">&gt;</span> swap-pane <span class="at">-D</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="bu">bind</span> <span class="op">&lt;</span> swap-pane <span class="at">-U</span></span></code></pre></div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
