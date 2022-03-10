@@ -310,7 +310,7 @@ kbd {
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.003   0.010   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.004   0.009   5.021</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>

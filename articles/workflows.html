@@ -103,20 +103,138 @@ kbd {
 }
 </style>
 <div class="section level2">
+<h2 id="from-tasks-to-workflows">From tasks to workflows<a class="anchor" aria-label="anchor" href="#from-tasks-to-workflows"></a>
+</h2>
+<p>So far, we have parallelized computations across either CPU cores or Slurm tasks. We could do this because the computations we wanted to parallelize were largely homogeneous.</p>
+<p>Real-world projects, however, will involve many different processing steps, and only some parts will lend themselves to run arbitrarily parallel.</p>
+<p>In this section, we will use the breakpoint example to treat as a workflow. The idea is to split the computing of the breakpoints (<code>compute_breakpt.r</code>) from plotting each individual resulting model (<code>plot.r</code>) and a summary report (<code>report.r</code>).</p>
+<p>We will try to run the breakpoint computation and plotting in parallel, and finish this project off with making a simple report of the data. We will also try to run all computations in a job on Sulis.</p>
+</div>
+<div class="section level2">
+<h2 id="shell-scripting">Shell scripting<a class="anchor" aria-label="anchor" href="#shell-scripting"></a>
+</h2>
+<p>In a job script with multiple cores, we can run multiple <code>srun</code> commands in parallel by using the <code>&amp;</code> sign at the end of a command (denotes that the script will not wait until the command is done, but continue) and the <code>wait</code> command to stop until the parallel commands are done.</p>
+<p>This will look like the following:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH commands go here</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">RDS</span> = bp1.rds bp2.rds bp3.rds ...</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> FILE <span class="kw">in</span> <span class="va">$(</span><span class="ex">RDS</span><span class="va">)</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">srun</span> Rscript compute_breakpt.r <span class="va">$(</span><span class="ex">FILE</span><span class="va">)</span> <span class="kw">&amp;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">srun</span> Rscript plot.r <span class="va">$(</span><span class="ex">FILE</span><span class="va">)</span> <span class="kw">&amp;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">wait</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> Rscript report.r</span></code></pre></div>
+<div class="section level4">
+<h4 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
+</h4>
+<ul>
+<li>Submit a job that uses shell scripting to produce computation results (<code>bp&lt;index&gt;.rds</code>), plots (<code>bp&lt;index&gt;.pdf</code>) and the report (<code>report.pdf</code>)</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
 <h2 id="gnu-parallel">GNU parallel<a class="anchor" aria-label="anchor" href="#gnu-parallel"></a>
 </h2>
+<p>GNU parallel is able to distribute a number of script calls in parallel, using available CPU cores, or available tasks in combination with srun.</p>
+<p>It is extensively documented at <a href="https://sulis-hpc.github.io/advanced/ensemble/gnuparallel.html" class="external-link uri">https://sulis-hpc.github.io/advanced/ensemble/gnuparallel.html</a>.</p>
+<div class="section level4">
+<h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
+</h4>
+<ul>
+<li>Submit a job with 2 tasks</li>
+<li>Use GNU parallel to <code>srun</code> the previous break point inference making use of these two tasks</li>
+<li>Add a report generation script that reads all results files generates a summary</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="gnu-make">GNU make<a class="anchor" aria-label="anchor" href="#gnu-make"></a>
 </h2>
+<p>GNU make is a tool commonly used to compile and assemble software executables, where it schedules the execution of different steps within a number of available jobs. In contrast to GNU parallel, it can distribute different kinds of calls together in a common framework.</p>
+<p>An example <code>Makefile</code> for processing our breakpoint example would look something like this:</p>
+<pre class="make"><code>R = Rscript
+ALL_IDX = $(shell seq 1 10)
+ALL_BP = $(ALL_IDX:%=bp%.rds)
+
+report.pdf: $(ALL_BP)
+    $(R) report.r $@ $^
+
+# create a breakpoint result file
+bp%.rds: data.rds
+    $(R) compute_breakpt.r $@ $^
+
+# convert a breakpoint result file to a plot file
+bp%.pdf: bp%.rds
+    $(R) plot.r $@ $^</code></pre>
+<p>The placeholder variables <code>$^</code> and <code>$@</code> refer to the input (right of the <code>:</code> in a rule) and output (left of the <code>:</code> in a rule), respectively. They can be queried using the <code><a href="https://rdrr.io/r/base/commandArgs.html" class="external-link">commandArgs()</a></code> function in R.</p>
+<p>You can type <code>make -n</code> to see which commands GNU make would execute without actually running it.</p>
+<div class="section level4">
+<h4 id="exercise-2">Exercise<a class="anchor" aria-label="anchor" href="#exercise-2"></a>
+</h4>
+<ul>
+<li>Edit the <code>Makefile</code> above with the previously provided breakpoint scripts to generate data, process data, and plot data</li>
+<li>Run the <code>make</code> command in a job with 2 cores</li>
+<li>Replace the <code>Rscript</code> call for <code>$(R)</code> by <code>srun Rscript</code> and run the process in a job with 2 tasks and 1 core each instead</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="snakemake">snakemake<a class="anchor" aria-label="anchor" href="#snakemake"></a>
 </h2>
+<p>Snakemake is a Python package and command-line tool that lets you write rules to chain multiple computations together, and run them in parallel. A typical <code>Snakefile</code> may look something like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rule report:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">input</span>:</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        rscript <span class="op">=</span> <span class="st">"report.r"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        infiles <span class="op">=</span> expand(<span class="st">"</span><span class="sc">{index}</span><span class="st">.rds"</span>, index<span class="op">=</span><span class="bu">range</span>(<span class="dv">10</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    output:</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        report <span class="op">=</span> <span class="st">"report.pdf"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    shell:</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Rscript {input.rscript} {output.report} {input.infiles}"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>rule compute:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">input</span>:</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        rscript <span class="op">=</span> <span class="st">"compute_breakpt.r"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        datafile <span class="op">=</span> <span class="st">"data.rds"</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    output:</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        outfile <span class="op">=</span> <span class="st">"bp</span><span class="sc">{index}</span><span class="st">.rds"</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    shell:</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Rscript {input.rscript} {input.datafile} {output.outfile}"</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>rule plot:</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">input</span>:</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        rscript <span class="op">=</span> <span class="st">"plot.r"</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        infile <span class="op">=</span> <span class="st">"bp</span><span class="sc">{index}</span><span class="st">.rds"</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    output:</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        plotfile <span class="op">=</span> <span class="st">"bp</span><span class="sc">{index}</span><span class="st">.pdf"</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    shell:</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Rscript {input.rscript} {input.infile} {output.plotfile}"</span></span></code></pre></div>
+<p>Snakemake looks more complicated than GNU make on the first look, but it has some features that the former does not have. For instance, it supports multiple wildcards per file name, a feature that can be very useful with more complicated workflows.</p>
+<p>You can type <code>snakemake -np</code> to see which commands Snakemake would execute without actually running it.</p>
+<div class="section level4">
+<h4 id="exercise-3">Exercise<a class="anchor" aria-label="anchor" href="#exercise-3"></a>
+</h4>
+<ul>
+<li>Write a <code>Snakefile</code> and the corresponding R scripts such that there are rules for breakpoint calculation and plotting separately</li>
+<li>Run this in a job with 1 task an 2 cores</li>
+<li>Change the <code>Rscript</code> calls to <code>srun Rscript</code> and run the report generation in a job with 2 tasks of 1 core each</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="targets">targets<a class="anchor" aria-label="anchor" href="#targets"></a>
 </h2>
+<p>The R package <code>targets</code> provides a workflow engine in pure R. It is well documented at <a href="https://books.ropensci.org/targets/" class="external-link uri">https://books.ropensci.org/targets/</a>.</p>
+<div class="section level4">
+<h4 id="exercise-4">Exercise<a class="anchor" aria-label="anchor" href="#exercise-4"></a>
+</h4>
+<ul>
+<li>Write an R script that uses <code>targets</code> to process the breakpoint calculation, plotting, and making a summary report</li>
+</ul>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
