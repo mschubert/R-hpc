@@ -58,15 +58,18 @@ add the `module load` commands to this file:
 ```{sh eval=FALSE}
 # User specific aliases and functions
 
-module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2
-module load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1
-module load Neovim/0.6.1
+if ! command -v R >/dev/null 2>&1; then
+    module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2
+    module load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1
+    module load Neovim/0.6.1
+fi
 ```
 
 After we edited this file, we can either close the connection and reconnect, or
 type `source ~/.bashrc` to reload it. Note, however, that loading these modules
 will result in a bit of a slowdown to establish the connection to the login
-node.
+node. This may not be what you want for normal use, but it will simplify working
+on the rest of the course materials.
 
 We can also change some other things, like adding colors to the prompt and have
 it display the current directory instead of just the folder name:
