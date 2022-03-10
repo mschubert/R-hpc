@@ -74,14 +74,17 @@ This will look like the following:
 RDS = bp1.rds bp2.rds bp3.rds ...
 
 for FILE in $(RDS); do
-    srun Rscript compute_breakpt.r $(FILE) &
-    srun Rscript plot.r $(FILE) &
+    ( srun Rscript compute_breakpt.r $(FILE) && Rscript plot.r $(FILE) ) &
 done
 
 wait
 
 srun Rscript report.r
 ```
+
+Here, we additionally use `&&` to chain together commands: The second will be
+run after the first one completed (because plotting the data only makes sense if
+we generated the data in the first place).
 
 #### Exercise
 
