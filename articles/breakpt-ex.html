@@ -179,7 +179,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 5019</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 18.2 seconds</span>
+<span class="co">#&gt; Finished sampling in 18.1 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -189,7 +189,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 73.7 seconds</span>
+<span class="co">#&gt; Finished sampling in 71.3 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -199,7 +199,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 150.6 seconds</span>
+<span class="co">#&gt; Finished sampling in 141.6 seconds</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
@@ -286,7 +286,9 @@ kbd {
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="va">CMQ_AUTH</span><span class="op">=</span>{{ <span class="ex">auth</span> }} srun R <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>We can then use this newly created template by:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.template <span class="op">=</span> <span class="st">"/path/to/updated/template"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.host <span class="op">=</span> <span class="st">"ib0"</span>, <span class="co"># faster network</span>
+        clustermq.template <span class="op">=</span> <span class="st">"/path/to/updated/template"</span><span class="op">)</span></code></pre></div>
+<p>Note that you can add these lines in your <code>~/.Rprofile</code> to set automatically.</p>
 <p>This should make the above example run with 20 tasks per job requested. More information on how to configure and use <code>clustermq</code> is available at the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User Guide vignette</a>.</p>
 </div>
 <div class="section level4">
