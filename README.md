@@ -31,7 +31,9 @@ Below is a brief overview of the course content.
 
 #### Afternoon: [Workflows](https://mschubert.github.io/R-hpc/articles/workflows.html)
 
-(not available yet)
+* GNU parallel und GNU make
+* Snakemake
+* The `targets` R package
 
 #### Afternoon: 
 

@@ -40,10 +40,169 @@ knitr::opts_chunk$set(
 )
 ```
 
+## From tasks to workflows
+
+So far, we have parallelized computations across either CPU cores or Slurm
+tasks. We could do this because the computations we wanted to parallelize were
+largely homogeneous.
+
+Real-world projects, however, will involve many different processing steps, and
+only some parts will lend themselves to run arbitrarily parallel.
+
+In this section, we will use the breakpoint example to treat as a workflow. The
+idea is to split the computing of the breakpoints (`compute_breakpt.r`) from
+plotting each individual resulting model (`plot.r`) and a summary report
+(`report.r`).
+
+We will try to run the breakpoint computation and plotting in parallel, and
+finish this project off with making a simple report of the data. We will also
+try to run all computations in a job on Sulis.
+
+## Shell scripting
+
+In a job script with multiple cores, we can run multiple `srun` commands in
+parallel by using the `&` sign at the end of a command (denotes that the script
+will not wait until the command is done, but continue) and the `wait` command to
+stop until the parallel commands are done.
+
+This will look like the following:
+
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH commands go here
+
+RDS = bp1.rds bp2.rds bp3.rds ...
+
+for FILE in $(RDS); do
+    srun Rscript compute_breakpt.r $(FILE) &
+    srun Rscript plot.r $(FILE) &
+done
+
+wait
+
+srun Rscript report.r
+```
+
+#### Exercise
+
+* Submit a job that uses shell scripting to produce computation results
+  (`bp<index>.rds`), plots (`bp<index>.pdf`) and the report (`report.pdf`)
+
 ## GNU parallel
+
+GNU parallel is able to distribute a number of script calls in parallel, using
+available CPU cores, or available tasks in combination with srun.
+
+It is extensively documented at
+https://sulis-hpc.github.io/advanced/ensemble/gnuparallel.html.
+
+#### Exercise
+
+* Submit a job with 2 tasks
+* Use GNU parallel to `srun` the previous break point inference making use of
+  these two tasks
+* Add a report generation script that reads all results files generates a
+  summary
 
 ## GNU make
 
+GNU make is a tool commonly used to compile and assemble software executables,
+where it schedules the execution of different steps within a number of available
+jobs. In contrast to GNU parallel, it can distribute different kinds of calls
+together in a common framework.
+
+An example `Makefile` for processing our breakpoint example would look something
+like this:
+
+```{makefile eval=FALSE}
+R = Rscript
+ALL_IDX = $(shell seq 1 10)
+ALL_BP = $(ALL_IDX:%=bp%.rds)
+
+report.pdf: $(ALL_BP)
+    $(R) report.r $@ $^
+
+# create a breakpoint result file
+bp%.rds: data.rds
+    $(R) compute_breakpt.r $@ $^
+
+# convert a breakpoint result file to a plot file
+bp%.pdf: bp%.rds
+    $(R) plot.r $@ $^
+```
+
+The placeholder variables `$^` and `$@` refer to the input (right of the `:` in
+a rule) and output (left of the `:` in a rule), respectively. They can be
+queried using the `commandArgs()` function in R.
+
+You can type `make -n` to see which commands GNU make would execute without
+actually running it.
+
+#### Exercise
+
+* Edit the `Makefile` above with the previously provided breakpoint scripts to
+  generate data, process data, and plot data
+* Run the `make` command in a job with 2 cores
+* Replace the `Rscript` call for `$(R)` by `srun Rscript` and run the process in
+  a job with 2 tasks and 1 core each instead
+
 ## snakemake
 
+Snakemake is a Python package and command-line tool that lets you write rules to
+chain multiple computations together, and run them in parallel. A typical
+`Snakefile` may look something like this:
+
+```{python eval=FALSE}
+rule report:
+    input:
+        rscript = "report.r",
+        infiles = expand("{index}.rds", index=range(10))
+    output:
+        report = "report.pdf"
+    shell:
+        "Rscript {input.rscript} {output.report} {input.infiles}"
+
+rule compute:
+    input:
+        rscript = "compute_breakpt.r",
+        datafile = "data.rds"
+    output:
+        outfile = "bp{index}.rds"
+    shell:
+        "Rscript {input.rscript} {input.datafile} {output.outfile}"
+
+rule plot:
+    input:
+        rscript = "plot.r",
+        infile = "bp{index}.rds"
+    output:
+        plotfile = "bp{index}.pdf"
+    shell:
+        "Rscript {input.rscript} {input.infile} {output.plotfile}"
+```
+
+Snakemake looks more complicated than GNU make on the first look, but it has
+some features that the former does not have. For instance, it supports multiple
+wildcards per file name, a feature that can be very useful with more complicated
+workflows.
+
+You can type `snakemake -np` to see which commands Snakemake would execute
+without actually running it.
+
+#### Exercise
+
+* Write a `Snakefile` and the corresponding R scripts such that there are rules
+  for breakpoint calculation and plotting separately
+* Run this in a job with 1 task an 2 cores
+* Change the `Rscript` calls to `srun Rscript` and run the report generation in
+  a job with 2 tasks of 1 core each
+
 ## targets
+
+The R package `targets` provides a workflow engine in pure R. It is well
+documented at https://books.ropensci.org/targets/.
+
+#### Exercise
+
+* Write an R script that uses `targets` to process the breakpoint calculation,
+  plotting, and making a summary report
