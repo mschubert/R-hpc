@@ -267,8 +267,11 @@ CMQ_AUTH={{ auth }} srun R --no-save --no-restore -e 'clustermq:::worker("{{ mas
 We can then use this newly created template by:
 
 ```{r eval=FALSE}
-options(clustermq.template = "/path/to/updated/template")
+options(clustermq.host = "ib0", # faster network
+        clustermq.template = "/path/to/updated/template")
 ```
+
+Note that you can add these lines in your `~/.Rprofile` to set automatically.
 
 This should make the above example run with 20 tasks per job requested. More
 information on how to configure and use `clustermq` is available at the [User
