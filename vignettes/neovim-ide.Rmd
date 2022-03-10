@@ -115,7 +115,6 @@ set undodir=~/.config/nvim/undo
 
 " uncomment after installing Nvim-R
 "let g:R_assign = 0 " do (not) map _ to <- for assignment
-"let g:R_cmd = "srunR"
 "vmap <Space> <Plug>RDSendSelection " use <Space> key to send a selection to R
 "nmap <Space> <Plug>RDSendLine      " use <Space> key to send a line to R
 ```
@@ -173,33 +172,16 @@ We can then install the plugins in Neovim using <kbd>Esc</kbd> and:
 
 #### Using R within nvim
 
-To use R from within Neovim, we need to create a helper script to start R in a
-job instead of on the login node (save this as `~/.local/bin/srunR` and make it
-executable using `chmod +x ~/.local/bin/srunR`):
+_Note:_ To avoid load on the login node, start the `nvim` in an interactive job
+if you plan on running computations in R.
 
-```{sh eval=FALSE}
-#!/bin/sh
-
-if [[ -z $SLURM_JOB_ID ]]; then
-    srun --account su105 --pty R $@
-else
-    R
-fi
-```
-
-Next, we can uncomment the lines previously commented in
-`~/.config/nvim/init.vim`.
-
+We can uncomment the lines previously commented in `~/.config/nvim/init.vim`.
 Now, using the `Nvim-R` plugin, we can access R directly from nvim. For this, we
 can open any `.r` file, and then type <kbd>\\</kbd><kbd>r</kbd><kbd>f</kbd>.
 
 We can now edit the file in the editor as we did before, but in addition send
 lines to R via <kbd>Space</kbd>, or is the terminal directly by selecting it
 with the mouse (or <kbd>Ctrl</kbd>+<kbd>w</kbd> followed by arrow keys).
-
-Because we added an `srunR` to the `R_cmd`, we can edit files on the login node,
-but if we start up R this way the actual computations will be run in an
-interactive job.
 
 ## Persistent sessions with `tmux`
 
