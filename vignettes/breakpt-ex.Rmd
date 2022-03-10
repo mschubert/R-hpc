@@ -248,7 +248,7 @@ should modify the submission template to:
 
 * Include the right budgeting account
 * Load the right modules in the submission script
-* Use `srun` with multiple tasks instead of the job array
+* Use `srun` with multiple tasks per index in the job array
 
 The new template should look something like this:
 
@@ -256,7 +256,8 @@ The new template should look something like this:
 #!/bin/sh
 #SBATCH --account={{ account | su105 }}
 #SBATCH --job-name={{ job_name }}
-#SBATCH --tasks={{ n_jobs }}
+#SBATCH --array=1-{{ n_jobs }}
+#SBATCH --tasks={{ tasks | 20 }}
 #SBATCH --mem-per-cpu={{ memory | 1024M }}
 #SBATCH --cpus-per-task={{ cores | 1 }}
 
@@ -269,9 +270,9 @@ We can then use this newly created template by:
 options(clustermq.template = "/path/to/updated/template")
 ```
 
-This should make the above example run. More information is available at the
-[User Guide
-vignette](https://mschubert.github.io/clustermq/articles/userguide.html).
+This should make the above example run with 20 tasks per job requested. More
+information on how to configure and use `clustermq` is available at the [User
+Guide vignette](https://mschubert.github.io/clustermq/articles/userguide.html).
 
 #### Exercise
 
