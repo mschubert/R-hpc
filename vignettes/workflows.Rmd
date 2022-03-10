@@ -114,7 +114,7 @@ together in a common framework.
 An example `Makefile` for processing our breakpoint example would look something
 like this:
 
-```{makefile eval=FALSE}
+```{make eval=FALSE}
 R = Rscript
 ALL_IDX = $(shell seq 1 10)
 ALL_BP = $(ALL_IDX:%=bp%.rds)
