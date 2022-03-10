@@ -241,9 +241,13 @@ starting to use `tmux`. We can add some configuration options in `~/.tmux.conf`
 to make using it a bit more intuitive:
 
 ```{sh eval=FALSE}
-bind C-a send-prefix    # enable Ctrl+a as prefix for people used to "screen"
-set -g mouse on         # enable mouse clicks to select windows and panes
-set-option -g default-terminal "screen-256color"    # more colors
+## enable Ctrl+a as prefix for people used to "screen"
+#set -g prefix C-a
+#bind C-a send-prefix
+#unbind C-b
+
+# enable mouse clicks to select windows and panes
+set -g mouse on
 
 # easy-to-remember split pane commands
 bind | split-window -h -c "#{pane_current_path}"
