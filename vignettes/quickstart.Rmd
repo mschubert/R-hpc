@@ -40,7 +40,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Prerequesites
+## Prerequisites
 
 Working on High-Performance Computing (HPC) facilities, we primarily interface
 with the systems via a command-line shell. We expect the people in this course
@@ -52,8 +52,14 @@ Similarly, we expect participants to start with different operating systems,
 e.g. not only Windows but also macOS and different Linux flavors. In order to
 keep the course consistent we recommend Windows users to work through the
 materials using the Windows Subsystem for Linux (WSL 2.0). This should be
-available for any up-to-date Windows 10 or later. We expect that macOS and Linux
-users are already familiar with their terminal.
+available for any up-to-date Windows 10 or later, with [installation
+instructions available
+here](https://docs.microsoft.com/en-us/windows/wsl/install).
+
+Likely, macOS and Linux users are already familiar with their terminal.
+
+_Note:_ On WSL, your home directory (every time we refer to paths starting
+with `~`) will likely be in a folder like `/mnt/c/Users/<UserName>`.
 
 ## Connecting to the computing cluster
 
@@ -87,6 +93,9 @@ copying files between your local machine and the HPC.
 Note, however, that in both cases you will still need to decrypt your private
 key file with your passphrase (which, at least on macOS and Linux can be
 automated using your OS keychain) and the 2FA token once a day.
+
+Login to Sulis is documented here in more detail:
+https://sulis-hpc.github.io/gettingstarted/connecting/
 
 ## Setting up R
 
@@ -175,8 +184,8 @@ following to copy the same file from the remote to your local end:
 scp host:test.txt .
 ```
 
-Here, the `scp` command looks for `test.sh` in your home directory (`~`; this is
-the default if no directory is specified) and will copy it to your current
+Here, the `scp` command looks for `test.txt` in your home directory (`~`; this
+is the default if no directory is specified) and will copy it to your current
 directory (`.`).
 
 If you want to copy directories you need to use recursive copying, i.e. `scp
@@ -222,11 +231,11 @@ empty file instead. Try typing a couple of <kbd>a</kbd> in the file:
 aaaa
 ```
 
-You will see the characters show up, as you would from another text editor as
-well. Notice, however, that the first <kbd>a</kbd> you typed did not show up,
-only all subsequent <kbd>a</kbd>s. This is because this editor has a "normal"
-and an "edit" mode. By typing the first <kbd>a</kbd>, we switched from the first
-to the latter.
+You will see the characters show up, as you would in other editor as well.
+Notice, however, that the first <kbd>a</kbd> you typed did not show up, only all
+subsequent <kbd>a</kbd>s. This is because this editor has a "normal" and an
+"edit" mode. By typing the first <kbd>a</kbd>, we switched from the former to
+the latter.
 
 We can now use <kbd>Esc</kbd> to switch back from the edit to the normal mode.
 In normal mode, we can type `:w` <kbd>Enter</kbd> to write the file, or `:wq` to
@@ -328,7 +337,7 @@ There's quite a few lines in there, so let's break this down:
   to run the script, which is required by `sbatch` (otherwise it will refuse to
   submit the job)
 * `#SBATCH --account` is needed again to budget the resources correctly
-* `#SBATCH --parititon` this time we specific the `compute` partition explicitly
+* `#SBATCH --partition` this time we specific the `compute` partition explicitly
 * `#SBATCH --ntasks` lists the tasks (computations) this job contains
 * `#SBATCH --cpus-per-task` specifies the numbers of CPUs per task
 * `#SBATCH --mem` specifies the amount of memory requested; this is in total,
@@ -376,7 +385,7 @@ system.time({ lapply(1:10, fsleep) })
 ```
 
 This will, unsurprisingly, take 10 times as long as an individual call to
-`fsleep()`. For many use cases, it makese sense to run computations (done in
+`fsleep()`. For many use cases, it makes sense to run computations (done in
 reality instead of just sleeping) in parallel. The probably most integrated
 solution is the `parallel` package, which is one of the core packages
 distributed with a standard R installation by default.

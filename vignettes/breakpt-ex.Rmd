@@ -80,7 +80,7 @@ simulate_data = function(n=1, len=1000, bps=c(0,1,2)) {
     # simulate one data set with random break points and y coordinates
     simulate_one = function() {
         sim = data.frame(x=seq_len(len), y=rnorm(len))
-        for (bp in sample(bps, 1)) {
+        for (bp in seq_len(sample(bps, 1))) {
             loc = sample(seq_len(len), 1)
             sim$y[loc:len] = sim$y[loc:len] + rnorm(1)
         }
@@ -152,7 +152,7 @@ density of the break point itself (blue line close to the bottom of the plot).
   automatic indentation and `:set nopaste` to return)
 * Simulate data for one and two break points
 * Start an interactive job with 1 task and 5 cores
-* Run the `mcp` inference script to try and estimate the breakpoints from the
+* Run the `mcp` inference script to try to estimate the breakpoints from the
   data. Do they match to the parameters of your simulation? (_hint_: you can use
   the `plot` function on an `mcp` model object; this will create an `Rplots.pdf`
   after which you'll need to `dev.off()` and copy to your local machine)
@@ -187,7 +187,7 @@ retrieve the result back to the session.
 There is, for instance, the packages `BatchJobs` and `batchtools`. These make
 use of the networked file system to write each call and its arguments to a file,
 that is then retrieved by the job and excecuted. These packages are robust for
-small numbers of jobs, however, the will put a substantial strain on the file
+small numbers of jobs, however, they will put a substantial strain on the file
 system for a high number of function calls.
 
 Instead, we will introduce two packages that make only little use of the shared
@@ -263,7 +263,7 @@ The new template should look something like this:
 CMQ_AUTH={{ auth }} srun R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
-When can then use this newly created template by:
+We can then use this newly created template by:
 
 ```{r eval=FALSE}
 options(clustermq.template = "/path/to/updated/template")
