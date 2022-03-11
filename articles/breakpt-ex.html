@@ -189,7 +189,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 71.3 seconds</span>
+<span class="co">#&gt; Finished sampling in 74.5 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -199,7 +199,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 141.6 seconds</span>
+<span class="co">#&gt; Finished sampling in 138.5 seconds</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
@@ -246,9 +246,10 @@ kbd {
 <p>It can be used to create a cluster object on Slurm tasks analogous to <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>. The command for this is <code>slurmR::makeSlurmCluster(ntasks)</code>, which can then be used with the <code>parLapply</code> or <code>parSapply</code> functions:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/slurmR" class="external-link">slurmR</a></span><span class="op">)</span>
-<span class="va">cl</span> <span class="op">=</span> <span class="fu">makeSlurmCluster</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
 
-<span class="va">res</span> <span class="op">=</span>  <span class="fu">parSapply</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">cl</span> <span class="op">=</span> <span class="fu">makeSlurmCluster</span><span class="op">(</span><span class="fl">5</span>, account<span class="op">=</span><span class="st">"su105"</span><span class="op">)</span>
+
+<span class="va">res</span> <span class="op">=</span> <span class="fu">parSapply</span><span class="op">(</span><span class="va">cl</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 
 <span class="fu">stopCluster</span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
 <p>The <code>sbatch</code> call that is created via <code>makeSlurmCluster</code> can be customized by passing different parameters to the cluster creation function. In particular, we need to:</p>
