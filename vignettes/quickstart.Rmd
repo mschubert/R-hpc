@@ -149,11 +149,11 @@ include R. We can check this by asking for the R path:
 which R
 ```
 
-We can then run or via the command-line, as we can on our local machines as
+We can then run `R` via the command-line, as we can on our local machines as
 well. Running `R` will give us an R command prompt:
 
 ```{sh echo=FALSE}
-R --no-save --no-restore -e "quit()"
+R --no-save --no-restore < <(echo '')
 ```
 
 We can use `R` as we could use the R shell in e.g. RStudio as well:
@@ -163,6 +163,13 @@ x = 5
 y = 3
 x * y
 ```
+
+When we are done, we can exit `R` by typing `quit(save="no")`. Note that after
+exiting `R` the interactive job is still running. We can exit the job shell by
+typing `exit` or <kbd>Ctrl</kbd>+<kbd>d</kbd>, unless we started the interactive
+job with `srun --pty R` instead of `$SHELL`. Note that exiting the job will
+sometimes display the message `Exited with exit code 127`. This can safely be
+ignored.
 
 ## Copying files
 
@@ -221,6 +228,7 @@ of `emacs`, please feel free to use this editor instead.
 To edit a simple text file, we can run:
 
 ```{sh eval=FALSE}
+# first run 'module load Neovim/0.6.1' if in an interactive job
 nvim myfile.txt
 ```
 
@@ -322,7 +330,8 @@ scontrol show jobid <jobid>
 This information will be available while the job is running and some (short)
 time after it is finished. We can now also see resources that we did not
 explicitly request, e.g. that the time limit was 1 hour, that we used the
-`compute` partition, and were able to use up to 2 Gb of memory.
+`compute` partition, and were able to use up to 1-4 Gb of memory (may depend on
+the node).
 
 After the job started, it will create an output file called `slurm-xxxxxx.out`
 (where `xxxxxx` is the job id) with the standard output of the command (the
@@ -402,9 +411,13 @@ parallel processing using the `%dopar%` command, or the
 
 #### Exercise
 
-* Create a "sleep script" on the computing cluster and a submission script that
-  will request 1 task with 5 cores. Submit this script as a job. How long does
-  it take? Does the runtime make sense?
+* Create a `sleep.r` script based on the `fsleep` function and the `mclapply`
+  above calling the function 10 times. Print the result of `system.time()`.
+* Create a submission script that will request 1 task with 5 cores (_hint:_ see
+  the documentation
+  [here](https://sulis-hpc.github.io/gettingstarted/batchq/singlenode))
+* Submit this script as a job. Does it run successfully? How long does it take?
+  Does the runtime make sense?
 * Submit the same script using a parallel `foreach` loop and a `PSOCK` cluster.
   Does it run? Do the results make sense?
 * A newer approach that aims at providing a common interface to many parallel
