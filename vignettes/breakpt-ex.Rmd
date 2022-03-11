@@ -186,7 +186,7 @@ retrieve the result back to the session.
 
 There is, for instance, the packages `BatchJobs` and `batchtools`. These make
 use of the networked file system to write each call and its arguments to a file,
-that is then retrieved by the job and excecuted. These packages are robust for
+that is then retrieved by the job and executed. These packages are robust for
 small numbers of jobs, however, they will put a substantial strain on the file
 system for a high number of function calls.
 

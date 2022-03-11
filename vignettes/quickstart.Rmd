@@ -168,10 +168,10 @@ x * y
 
 There are different options for getting your files to the compute cluster. One
 option is to edit all files locally, and then copy them over SSH. So, for
-instance, one could have a local file `text.txt` and copy it over:
+instance, one could have a local file `test.txt` and copy it over:
 
 ```{sh eval=FALSE}
-scp text.txt host:
+scp test.txt host:
 ```
 
 where you specified `host` in your `~/.ssh/config` before, or otherwise you may

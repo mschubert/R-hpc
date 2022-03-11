@@ -94,7 +94,7 @@ we generated the data in the first place).
 ## GNU parallel
 
 GNU parallel is able to distribute a number of script calls in parallel, using
-available CPU cores, or available tasks in combination with srun.
+available CPU cores, or available tasks in combination with `srun`.
 
 It is extensively documented at
 https://sulis-hpc.github.io/advanced/ensemble/gnuparallel.html.
