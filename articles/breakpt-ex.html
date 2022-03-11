@@ -179,7 +179,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 5019</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 18.7 seconds</span>
+<span class="co">#&gt; Finished sampling in 18.1 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -189,7 +189,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 82.7 seconds</span>
+<span class="co">#&gt; Finished sampling in 72.7 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -199,9 +199,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 158.1 seconds</span>
-<span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
-
+<span class="co">#&gt; Finished sampling in 147.6 seconds</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/plot.mcpfit.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
 <p><img src="breakpt-ex_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
@@ -213,8 +211,8 @@ kbd {
 <li>Use your editor to create the break point simulation script (<em>hint</em>: you can use <kbd>Esc</kbd>+<code>:set paste</code> in nvim to copy-paste the text without automatic indentation and <code>:set nopaste</code> to return)</li>
 <li>Simulate data for one and two break points</li>
 <li>Start an interactive job with 1 task and 5 cores</li>
-<li>Run the <code>mcp</code> inference script to try to estimate the breakpoints from the data. Do they match to the parameters of your simulation? (<em>hint</em>: you can use the <code>plot</code> function on an <code>mcp</code> model object; this will create an <code>Rplots.pdf</code> after which you’ll need to <code><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off()</a></code> and copy to your local machine)</li>
-<li>Which options do you see to make this code run faster? (<em>hint</em>: there is both <code>mcp</code>-provided parallelism and and sequential steps in the inference code)</li>
+<li>Run the <code>mcp</code> inference script to try to estimate the breakpoints from the data. Do they match to the parameters of your simulation? (<em>hint</em>: you can use the <code>plot</code> function on a <code>mcp</code> model object; this will create a <code>Rplots.pdf</code> after which you’ll need to <code><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off()</a></code> and copy to your local machine)</li>
+<li>Which options do you see to make this code run faster? (<em>hint</em>: there is both <code>mcp</code>-provided parallelism and sequential steps in the inference code)</li>
 <li>How much runtime can you save by running computations in parallel?</li>
 </ul>
 </div>
@@ -222,14 +220,14 @@ kbd {
 <div class="section level2">
 <h2 id="bigger-data-sets">Bigger data sets<a class="anchor" aria-label="anchor" href="#bigger-data-sets"></a>
 </h2>
-<p>The strategy of reserving a node with many CPUs works well up to the extent where we want to process more computations in parallel than there is CPUs on a given node (modern nodes often have up to 128 cores/threads).</p>
+<p>The strategy of reserving a node with many CPUs works well up to the extent where we want to process more computations in parallel than there are CPUs on a given node (modern nodes often have up to 128 cores/threads).</p>
 <p>Here, we want to simulate such a big computational task, but for this to not use too many resources we will limit the overall amount.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
 </h4>
 <ul>
 <li>Simulate 10 breakpoint data sets using the function above, and save the resulting list in an <code>.rds</code> object (using <code>saveRDS</code>)</li>
-<li>Write a submission script with 10 tasks that load the object, subset the current task index, and save the resulting model as <code>.rds</code> and model plot as <code>.pdf</code> (<em>hint</em>: there are automatic environment variables available for each slurm run, such as <a href="https://slurm.schedmd.com/sbatch.html#lbAK" class="external-link"><code>SLURM_PROCID</code></a>)</li>
+<li>Write a submission script with 10 tasks that load the object, subset the current task index, and save the resulting model as <code>.rds</code> and model plot as <code>.pdf</code> (<em>hint</em>: there are automatic environment variables available for each Slurm run, such as <a href="https://slurm.schedmd.com/sbatch.html#lbAK" class="external-link"><code>SLURM_PROCID</code></a>)</li>
 </ul>
 </div>
 </div>
@@ -237,7 +235,7 @@ kbd {
 <h2 id="hpc-specific-packages">HPC-specific packages<a class="anchor" aria-label="anchor" href="#hpc-specific-packages"></a>
 </h2>
 <p>There are also multiple packages available to make use of HPC resources from within R. That is to say, that R will submit a job or multiple jobs, and retrieve the result back to the session.</p>
-<p>There is, for instance, the packages <code>BatchJobs</code> and <code>batchtools</code>. These make use of the networked file system to write each call and its arguments to a file, that is then retrieved by the job and executed. These packages are robust for small numbers of jobs, however, they will put a substantial strain on the file system for a high number of function calls.</p>
+<p>There are, for instance, the packages <code>BatchJobs</code> and <code>batchtools</code>. These make use of the networked file system to write each call and its arguments to a file, that is then retrieved by the job and executed. These packages are robust for small numbers of jobs, however, they will put a substantial strain on the file system for a high number of function calls.</p>
 <p>Instead, we will introduce two packages that make only little use of the shared file system, <code>slurmR</code> and <code>clustermq</code>. (Note that I am the author of the latter, so there’s a bit of a conflict of interest here.)</p>
 <div class="section level4">
 <h4 id="slurmr">slurmR<a class="anchor" aria-label="anchor" href="#slurmr"></a>

@@ -105,7 +105,7 @@ kbd {
 <div class="section level2">
 <h2 id="making-r-and-python-available-by-default">Making R and Python available by default<a class="anchor" aria-label="anchor" href="#making-r-and-python-available-by-default"></a>
 </h2>
-<p>There are certain tools that we expect to use often but that are only available to load via modules. For instance, we are likely to very often make use of R, python, a compiler (GCC), or an editor (Neovim).</p>
+<p>There are certain tools that we expect to use often but that are only available to load via modules. For instance, we are likely to frequently make use of R, python, a compiler (GCC), or an editor (Neovim).</p>
 <p>When we connect to the computing cluster, we open a shell, i.e. the command-line interface there. The default for this is <code>bash</code>, which is usually available on all Unix-like systems. (However, it is no longer default on macOS in favor of <code>zsh</code>.)</p>
 <p>Every time we start <code>bash</code> on the login node, it runs its configuration file, <code>~/.bashrc</code>. To automatically load our standard tool set when we connect, we can add the <code>module load</code> commands to this file:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># User specific aliases and functions</span></span>
@@ -197,9 +197,9 @@ call plug#end()</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> detach</span></code></pre></div>
 <p>This will close the <code>tmux</code> session. We can now disconnect from the login node, later reconnect, and re-attach to the same session by typing:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> attach <span class="at">-t</span> 0</span></code></pre></div>
-<p><code>0</code> in this case the the (automatic) name of the session we created previously. In addition, we can also split our terminal in 2 vertical “panes” using <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>%</kbd> or create a new “window” using <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>c</kbd>. The panes, windows, and open applications (e.g. a text editor) will be waiting for us each time we detach and re-attach to the session. <kbd>Ctrl</kbd>+<kbd>b</kbd> is the common prefix, to be typed before any other tmux command.</p>
+<p><code>0</code> in this case the (automatic) name of the session we created previously. In addition, we can also split our terminal in 2 vertical “panes” using <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>%</kbd> or create a new “window” using <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>c</kbd>. The panes, windows, and open applications (e.g. a text editor) will be waiting for us each time we detach and re-attach to the session. <kbd>Ctrl</kbd>+<kbd>b</kbd> is the common prefix, to be typed before any other tmux command.</p>
 <div class="section level4">
-<h4 id="an-ssht-alias-to-automatically-connect-to-tmux">An <code>ssht</code> alias to automatically connect to tmux<a class="anchor" aria-label="anchor" href="#an-ssht-alias-to-automatically-connect-to-tmux"></a>
+<h4 id="a-ssht-alias-to-automatically-connect-to-tmux">A <code>ssht</code> alias to automatically connect to tmux<a class="anchor" aria-label="anchor" href="#a-ssht-alias-to-automatically-connect-to-tmux"></a>
 </h4>
 <p>We can define the following function to automatically connect to (or create) a <code>tmux</code> session when we type <code>ssht sulis</code> instead of <code>ssh sulis</code>. If we are using the <code>bash</code> shell locally as well, we can add these lines to our <em>local</em> <code>~/.bashrc</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssht()</span> <span class="kw">{</span></span>
@@ -209,7 +209,7 @@ call plug#end()</code></pre>
 <div class="section level4">
 <h4 id="making-tmux-easier-to-use">Making <code>tmux</code> easier to use<a class="anchor" aria-label="anchor" href="#making-tmux-easier-to-use"></a>
 </h4>
-<p>There are are a lot of different commands to remember, especially when first starting to use <code>tmux</code>. We can add some configuration options in <code>~/.tmux.conf</code> to make using it a bit more intuitive:</p>
+<p>There are a lot of different commands to remember, especially when first starting to use <code>tmux</code>. We can add some configuration options in <code>~/.tmux.conf</code> to make using it a bit more intuitive:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">## enable Ctrl+a as prefix for people used to "screen"</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#set -g prefix C-a</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#bind C-a send-prefix</span></span>

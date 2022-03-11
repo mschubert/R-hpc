@@ -106,7 +106,7 @@ kbd {
 <h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
 </h2>
 <p>Working on High-Performance Computing (HPC) facilities, we primarily interface with the systems via a command-line shell. We expect the people in this course to have a wide range of expertise and different starting points concerning the use of the command-line, which will make it easier or more challenging for participants, depending on where they are coming from.</p>
-<p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation instructions available here</a>.</p>
+<p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent, we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation instructions available here</a>.</p>
 <p>Likely, macOS and Linux users are already familiar with their terminal.</p>
 <p><em>Note:</em> On WSL, your home directory (every time we refer to paths starting with <code>~</code>) will likely be in a folder like <code>/mnt/c/Users/&lt;UserName&gt;</code>.</p>
 </div>
@@ -124,7 +124,7 @@ kbd {
 <p>Having it set up like this, establishing the connection is as simple as typing:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> sulis</span></code></pre></div>
 <p>This will come in handy when not only connecting to the HPC once, but also copying files between your local machine and the HPC.</p>
-<p>Note, however, that in both cases you will still need to decrypt your private key file with your passphrase (which, at least on macOS and Linux can be automated using your OS keychain) and the 2FA token once a day.</p>
+<p>Note, however, that in both cases you will still need to decrypt your private key file with your passphrase (which, at least on macOS and Linux, can be automated using your OS keychain) and the 2FA token once a day.</p>
 <p>Login to Sulis is documented here in more detail: <a href="https://sulis-hpc.github.io/gettingstarted/connecting/" class="external-link uri">https://sulis-hpc.github.io/gettingstarted/connecting/</a></p>
 </div>
 <div class="section level2">
@@ -243,7 +243,7 @@ kbd {
 <li>
 <code>#SBATCH --account</code> is needed again to budget the resources correctly</li>
 <li>
-<code>#SBATCH --partition</code> this time we specific the <code>compute</code> partition explicitly</li>
+<code>#SBATCH --partition</code> this time we specify the <code>compute</code> partition explicitly</li>
 <li>
 <code>#SBATCH --ntasks</code> lists the tasks (computations) this job contains</li>
 <li>
@@ -263,7 +263,7 @@ kbd {
 <ul>
 <li>Create a batch submission script like the one above using the command-line editor on the cluster</li>
 <li>Submit it using <code>sbatch &lt;script&gt;</code>, both with and without the <code>srun</code>. What changes?</li>
-<li>What happens with we change the <code>ntasks</code> parameter to <code>2</code>, both with and without the <code>srun</code> command?</li>
+<li>What happens when we change the <code>ntasks</code> parameter to <code>2</code>, both with and without the <code>srun</code> command?</li>
 </ul>
 </div>
 </div>
@@ -305,12 +305,12 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.006   0.000  10.015</span></code></pre></div>
+<span class="co">#&gt;   0.005   0.000  10.015</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.017   0.000   5.023</span></code></pre></div>
+<span class="co">#&gt;   0.013   0.000   5.021</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
