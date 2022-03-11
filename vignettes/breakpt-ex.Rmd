@@ -206,9 +206,10 @@ or `parSapply` functions:
 
 ```{r eval=FALSE}
 library(slurmR)
-cl = makeSlurmCluster(5)
 
-res =  parSapply(1:100, function(x) mean(runif(100)))
+cl = makeSlurmCluster(5, account="su105")
+
+res = parSapply(cl, 1:100, function(x) { Sys.sleep(1); mean(runif(100)) })
 
 stopCluster(cl)
 ```
