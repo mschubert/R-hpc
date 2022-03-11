@@ -43,7 +43,7 @@ knitr::opts_chunk$set(
 ## Making R and Python available by default
 
 There are certain tools that we expect to use often but that are only available
-to load via modules. For instance, we are likely to very often make use of R,
+to load via modules. For instance, we are likely to frequently make use of R,
 python, a compiler (GCC), or an editor (Neovim).
 
 When we connect to the computing cluster, we open a shell, i.e. the command-line
@@ -213,7 +213,7 @@ later reconnect, and re-attach to the same session by typing:
 tmux attach -t 0
 ```
 
-`0` in this case the the (automatic) name of the session we created previously.
+`0` in this case the (automatic) name of the session we created previously.
 In addition, we can also split our terminal in 2 vertical "panes" using
 <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>%</kbd> or create a new "window" using
 <kbd>Ctrl</kbd>+<kbd>b</kbd>, <kbd>c</kbd>. The panes, windows, and open
@@ -221,7 +221,7 @@ applications (e.g. a text editor) will be waiting for us each time we detach and
 re-attach to the session. <kbd>Ctrl</kbd>+<kbd>b</kbd> is the common prefix, to
 be typed before any other tmux command.
 
-#### An `ssht` alias to automatically connect to tmux
+#### A `ssht` alias to automatically connect to tmux
 
 We can define the following function to automatically connect to (or create) a
 `tmux` session when we type `ssht sulis` instead of `ssh sulis`. If we are using
@@ -236,7 +236,7 @@ ssht() {
 
 #### Making `tmux` easier to use
 
-There are are a lot of different commands to remember, especially when first
+There are a lot of different commands to remember, especially when first
 starting to use `tmux`. We can add some configuration options in `~/.tmux.conf`
 to make using it a bit more intuitive:
 

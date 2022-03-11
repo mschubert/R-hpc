@@ -154,16 +154,16 @@ density of the break point itself (blue line close to the bottom of the plot).
 * Start an interactive job with 1 task and 5 cores
 * Run the `mcp` inference script to try to estimate the breakpoints from the
   data. Do they match to the parameters of your simulation? (_hint_: you can use
-  the `plot` function on an `mcp` model object; this will create an `Rplots.pdf`
+  the `plot` function on a `mcp` model object; this will create a `Rplots.pdf`
   after which you'll need to `dev.off()` and copy to your local machine)
 * Which options do you see to make this code run faster? (_hint_: there is both
-  `mcp`-provided parallelism and and sequential steps in the inference code)
+  `mcp`-provided parallelism and sequential steps in the inference code)
 * How much runtime can you save by running computations in parallel?
 
 ## Bigger data sets
 
 The strategy of reserving a node with many CPUs works well up to the extent
-where we want to process more computations in parallel than there is CPUs on a
+where we want to process more computations in parallel than there are CPUs on a
 given node (modern nodes often have up to 128 cores/threads).
 
 Here, we want to simulate such a big computational task, but for this to not use
@@ -176,7 +176,7 @@ too many resources we will limit the overall amount.
 * Write a submission script with 10 tasks that load the object, subset the
   current task index, and save the resulting model as `.rds` and model plot as
   `.pdf` (_hint_: there are automatic environment variables available for each
-  slurm run, such as [`SLURM_PROCID`](https://slurm.schedmd.com/sbatch.html#lbAK))
+  Slurm run, such as [`SLURM_PROCID`](https://slurm.schedmd.com/sbatch.html#lbAK))
 
 ## HPC-specific packages
 
@@ -184,7 +184,7 @@ There are also multiple packages available to make use of HPC resources from
 within R. That is to say, that R will submit a job or multiple jobs, and
 retrieve the result back to the session.
 
-There is, for instance, the packages `BatchJobs` and `batchtools`. These make
+There are, for instance, the packages `BatchJobs` and `batchtools`. These make
 use of the networked file system to write each call and its arguments to a file,
 that is then retrieved by the job and executed. These packages are robust for
 small numbers of jobs, however, they will put a substantial strain on the file

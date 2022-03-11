@@ -50,7 +50,7 @@ participants, depending on where they are coming from.
 
 Similarly, we expect participants to start with different operating systems,
 e.g. not only Windows but also macOS and different Linux flavors. In order to
-keep the course consistent we recommend Windows users to work through the
+keep the course consistent, we recommend Windows users to work through the
 materials using the Windows Subsystem for Linux (WSL 2.0). This should be
 available for any up-to-date Windows 10 or later, with [installation
 instructions available
@@ -91,7 +91,7 @@ This will come in handy when not only connecting to the HPC once, but also
 copying files between your local machine and the HPC.
 
 Note, however, that in both cases you will still need to decrypt your private
-key file with your passphrase (which, at least on macOS and Linux can be
+key file with your passphrase (which, at least on macOS and Linux, can be
 automated using your OS keychain) and the 2FA token once a day.
 
 Login to Sulis is documented here in more detail:
@@ -337,7 +337,7 @@ There's quite a few lines in there, so let's break this down:
   to run the script, which is required by `sbatch` (otherwise it will refuse to
   submit the job)
 * `#SBATCH --account` is needed again to budget the resources correctly
-* `#SBATCH --partition` this time we specific the `compute` partition explicitly
+* `#SBATCH --partition` this time we specify the `compute` partition explicitly
 * `#SBATCH --ntasks` lists the tasks (computations) this job contains
 * `#SBATCH --cpus-per-task` specifies the numbers of CPUs per task
 * `#SBATCH --mem` specifies the amount of memory requested; this is in total,
@@ -358,7 +358,7 @@ There's quite a few lines in there, so let's break this down:
   editor on the cluster
 * Submit it using `sbatch <script>`, both with and without the `srun`. What
   changes?
-* What happens with we change the `ntasks` parameter to `2`, both with and
+* What happens when we change the `ntasks` parameter to `2`, both with and
   without the `srun` command?
 
 ## R on HPC

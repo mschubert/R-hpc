@@ -196,7 +196,7 @@ without actually running it.
 
 * Write a `Snakefile` and the corresponding R scripts such that there are rules
   for breakpoint calculation and plotting separately
-* Run this in a job with 1 task an 2 cores
+* Run this in a job with 1 task and 2 cores
 * Change the `Rscript` calls to `srun Rscript` and run the report generation in
   a job with 2 tasks of 1 core each
 
