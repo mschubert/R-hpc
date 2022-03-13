@@ -179,7 +179,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 5019</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 18.8 seconds</span>
+<span class="co">#&gt; Finished sampling in 18.9 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -189,7 +189,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 76.9 seconds</span>
+<span class="co">#&gt; Finished sampling in 79.4 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -199,7 +199,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 148.3 seconds</span>
+<span class="co">#&gt; Finished sampling in 158.8 seconds</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
@@ -239,6 +239,7 @@ kbd {
 <p>There are also multiple packages available to make use of HPC resources from within R. That is to say, that R will submit a job or multiple jobs, and retrieve the result back to the session.</p>
 <p>There are, for instance, the packages <code>BatchJobs</code> and <code>batchtools</code>. These make use of the networked file system to write each call and its arguments to a file, that is then retrieved by the job and executed. These packages are robust for small numbers of jobs, however, they will put a substantial strain on the file system for a high number of function calls.</p>
 <p>Instead, we will introduce two packages that make only little use of the shared file system, <code>slurmR</code> and <code>clustermq</code>. (Note that I am the author of the latter, so there’s a bit of a conflict of interest here.)</p>
+<p>There is also the <a href="https://cran.r-project.org/package=Rmpi" class="external-link"><code>Rmpi</code></a> package, which provides an R cluster object for e.g. <code>parLapply</code> of multiple instances communicating over different nodes. There is an example on the <a href="https://sulis-hpc.github.io/gettingstarted/batchq/mpi#parallel-cluster-in-r" class="external-link">Sulis docs</a>, however, it requires additional setup in the job submission script.</p>
 <div class="section level4">
 <h4 id="slurmr">slurmR<a class="anchor" aria-label="anchor" href="#slurmr"></a>
 </h4>

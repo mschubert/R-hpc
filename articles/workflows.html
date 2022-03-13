@@ -120,8 +120,8 @@ kbd {
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">RDS</span> = bp1.rds bp2.rds bp3.rds ...</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> FILE <span class="kw">in</span> <span class="va">$(</span><span class="ex">RDS</span><span class="va">)</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">(</span> <span class="ex">srun</span> Rscript compute_breakpt.r <span class="va">$(</span><span class="ex">FILE</span><span class="va">)</span> <span class="kw">&amp;&amp;</span> <span class="ex">Rscript</span> plot.r <span class="va">$(</span><span class="ex">FILE</span><span class="va">)</span> <span class="kw">)</span> <span class="kw">&amp;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> FILE <span class="kw">in</span> <span class="va">$RDS</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">(</span> <span class="ex">srun</span> Rscript compute_breakpt.r <span class="va">$FILE</span> <span class="kw">&amp;&amp;</span> <span class="ex">Rscript</span> plot.r <span class="va">$FILE</span> <span class="kw">)</span> <span class="kw">&amp;</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">wait</span></span>
@@ -214,6 +214,7 @@ bp%.pdf: bp%.rds
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Rscript {input.rscript} {input.infile} {output.plotfile}"</span></span></code></pre></div>
 <p>Snakemake looks more complicated than GNU make on the first look, but it has some features that the former does not have. For instance, it supports multiple wildcards per file name, a feature that can be very useful with more complicated workflows.</p>
 <p>You can type <code>snakemake -np</code> to see which commands Snakemake would execute without actually running it.</p>
+<p>Note that if you want to use Snakemake regularly, there is a <a href="https://github.com/Snakemake-Profiles/slurm" class="external-link">Slurm profile</a> available which is not part of the excercises below.</p>
 <div class="section level4">
 <h4 id="exercise-3">Exercise<a class="anchor" aria-label="anchor" href="#exercise-3"></a>
 </h4>
