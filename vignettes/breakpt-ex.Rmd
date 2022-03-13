@@ -194,6 +194,12 @@ Instead, we will introduce two packages that make only little use of the shared
 file system, `slurmR` and `clustermq`. (Note that I am the author of the latter,
 so there's a bit of a conflict of interest here.)
 
+There is also the [`Rmpi`](https://cran.r-project.org/package=Rmpi) package,
+which provides an R cluster object for e.g. `parLapply` of multiple instances
+communicating over different nodes. There is an example on the [Sulis
+docs](https://sulis-hpc.github.io/gettingstarted/batchq/mpi#parallel-cluster-in-r),
+however, it requires additional setup in the job submission script.
+
 #### slurmR
 
 The [`slurmR`](https://uscbiostats.github.io/slurmR/) package is a lightweight

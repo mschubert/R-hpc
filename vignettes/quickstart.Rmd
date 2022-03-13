@@ -416,8 +416,8 @@ parallel processing using the `%dopar%` command, or the
 * Create a submission script that will request 1 task with 5 cores (_hint:_ see
   the documentation
   [here](https://sulis-hpc.github.io/gettingstarted/batchq/singlenode))
-* Submit this script as a job. Does it run successfully? How long does it take?
-  Does the runtime make sense?
+* Submit this script as a job. Does it run successfully? How long does it take
+  according to the job log file? Does the runtime make sense?
 * Submit the same script using a parallel `foreach` loop and a `PSOCK` cluster.
   Does it run? Do the results make sense?
 * A newer approach that aims at providing a common interface to many parallel

@@ -73,8 +73,8 @@ This will look like the following:
 
 RDS = bp1.rds bp2.rds bp3.rds ...
 
-for FILE in $(RDS); do
-    ( srun Rscript compute_breakpt.r $(FILE) && Rscript plot.r $(FILE) ) &
+for FILE in $RDS; do
+    ( srun Rscript compute_breakpt.r $FILE && Rscript plot.r $FILE ) &
 done
 
 wait
@@ -191,6 +191,10 @@ workflows.
 
 You can type `snakemake -np` to see which commands Snakemake would execute
 without actually running it.
+
+Note that if you want to use Snakemake regularly, there is a [Slurm
+profile](https://github.com/Snakemake-Profiles/slurm) available which is not
+part of the excercises below.
 
 #### Exercise
 
