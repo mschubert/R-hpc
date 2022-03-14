@@ -314,7 +314,7 @@ kbd {
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.013   0.000   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.000   0.013   5.020</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
@@ -323,7 +323,7 @@ kbd {
 <li>Create a <code>sleep.r</code> script based on the <code>fsleep</code> function and the <code>mclapply</code> above calling the function 10 times. Print the result of <code><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time()</a></code>.</li>
 <li>Create a submission script that will request 1 task with 5 cores (<em>hint:</em> see the documentation <a href="https://sulis-hpc.github.io/gettingstarted/batchq/singlenode" class="external-link">here</a>)</li>
 <li>Submit this script as a job. Does it run successfully? How long does it take according to the job log file? Does the runtime make sense?</li>
-<li>Submit the same script using a parallel <code>foreach</code> loop and a <code>PSOCK</code> cluster. Does it run? Do the results make sense?</li>
+<li>Submit the same script using a parallel <code>foreach</code> <code>%dopar%</code> loop and a <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>. Does it run? Do the results make sense?</li>
 <li>A newer approach that aims at providing a common interface to many parallel backends is the <code>future</code> package. Can you run the above example using <code>plan(multisession)</code> and <code>future.apply</code>?</li>
 </ul>
 <details><summary>
