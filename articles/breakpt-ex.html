@@ -179,7 +179,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 5019</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 18.9 seconds</span>
+<span class="co">#&gt; Finished sampling in 18.3 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -189,7 +189,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 79.4 seconds</span>
+<span class="co">#&gt; Finished sampling in 72.3 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -199,7 +199,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 158.8 seconds</span>
+<span class="co">#&gt; Finished sampling in 139.1 seconds</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
@@ -246,7 +246,8 @@ kbd {
 <p>The <a href="https://uscbiostats.github.io/slurmR/" class="external-link"><code>slurmR</code></a> package is a lightweight (dependency-free) R package that allows users to interact with the scheduler.</p>
 <p>It can be used to create a cluster object on Slurm tasks analogous to <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>. The command for this is <code>slurmR::makeSlurmCluster(ntasks)</code>, which can then be used with the <code>parLapply</code> or <code>parSapply</code> functions:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/slurmR" class="external-link">slurmR</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="co"># install.packages("slurmR") if you have not installed the package yet</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/slurmR" class="external-link">slurmR</a></span><span class="op">)</span>
 
 <span class="va">cl</span> <span class="op">=</span> <span class="fu">makeSlurmCluster</span><span class="op">(</span><span class="fl">5</span>, account<span class="op">=</span><span class="st">"su105"</span><span class="op">)</span>
 
@@ -265,7 +266,8 @@ kbd {
 <p>The <a href="https://mschubert.github.io/clustermq/" class="external-link"><code>clustermq</code></a> package provides an interface to multiple HPC schedulers (including Slurm) via the ZeroMQ socket library, available as a module:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCCcore/10.2.0 ZeroMQ/4.3.3</span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mschubert.github.io/clustermq/" class="external-link">clustermq</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="co"># install.packges("clustermq") if you have not installed the package yet</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mschubert.github.io/clustermq/" class="external-link">clustermq</a></span><span class="op">)</span>
 
 <span class="va">fx</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">2</span>
 
@@ -273,10 +275,9 @@ kbd {
 <p>The package relies on a <a href="https://github.com/mschubert/clustermq/blob/master/inst/SLURM.tmpl" class="external-link">submission template</a>, which by default submits Slurm jobs as a job array. As we need to supply an account name, and the policy on Sulis is to use tasks whenever possible, we should modify the submission template to:</p>
 <ul>
 <li>Include the right budgeting account</li>
-<li>Load the right modules in the submission script</li>
 <li>Use <code>srun</code> with multiple tasks per index in the job array</li>
 </ul>
-<p>The new template should look something like this:</p>
+<p>To address both points, we can create a new file <code>cmq_slurm.tmpl</code> with the following contents:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account={{ account | su105 }}</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name={{ job_name }}</span></span>
@@ -290,7 +291,7 @@ kbd {
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.host <span class="op">=</span> <span class="st">"ib0"</span>, <span class="co"># faster network</span>
         clustermq.template <span class="op">=</span> <span class="st">"/path/to/updated/template"</span><span class="op">)</span></code></pre></div>
-<p>Note that you can add these lines in your <code>~/.Rprofile</code> to set automatically.</p>
+<p>We can either run these lines in an active R session, or add them to <code>~/.Rprofile</code> to set automatically each time R is started.</p>
 <p>This should make the above example run with 20 tasks per job requested. More information on how to configure and use <code>clustermq</code> is available at the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User Guide vignette</a>.</p>
 </div>
 <div class="section level4">

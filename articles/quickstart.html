@@ -119,7 +119,7 @@ kbd {
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Host</span> sulis</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Hostname</span> login.sulis.ac.uk</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">User</span> <span class="op">&lt;</span>username<span class="op">&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#    ProxyCommand ssh &lt;proxy&gt; -W %h:%p   # when connecting via an SSH proxy</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#    ProxyJump &lt;proxy&gt;   # when connecting via the host entry "&lt;proxy&gt;"</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">IdentityFile</span> ~/.ssh/<span class="op">&lt;</span>sulis_rsa<span class="op">&gt;</span></span></code></pre></div>
 <p>Having it set up like this, establishing the connection is as simple as typing:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> sulis</span></code></pre></div>
@@ -181,13 +181,14 @@ kbd {
 <h2 id="copying-files">Copying files<a class="anchor" aria-label="anchor" href="#copying-files"></a>
 </h2>
 <p>There are different options for getting your files to the compute cluster. One option is to edit all files locally, and then copy them over SSH. So, for instance, one could have a local file <code>test.txt</code> and copy it over:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> test.txt host:</span></code></pre></div>
-<p>where you specified <code>host</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> host:test.txt .</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> test.txt <span class="op">&lt;</span>host<span class="op">&gt;</span>:</span></code></pre></div>
+<p>where you specified <code>&lt;host&gt;</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="op">&lt;</span>host<span class="op">&gt;</span>:test.txt .</span></code></pre></div>
 <p>Here, the <code>scp</code> command looks for <code>test.txt</code> in your home directory (<code>~</code>; this is the default if no directory is specified) and will copy it to your current directory (<code>.</code>).</p>
 <p>If you want to copy directories you need to use recursive copying, i.e. <code>scp -r</code>.</p>
 <p>Another, and maybe better alternative is the <code>rsync</code> command. This will keep timestamps intact, and can be used to copy only files that have updated timestamps (<code>-u</code>) compared to the local files (<code>-v</code> will print the files while copying):</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> host:test.txt .</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> <span class="op">&lt;</span>host<span class="op">&gt;</span>:test.txt .</span></code></pre></div>
+<p><em>Note:</em> all copy commands, both from and to Sulis should be run from your local machine.</p>
 </div>
 <div class="section level2">
 <h2 id="editing-files">Editing files<a class="anchor" aria-label="anchor" href="#editing-files"></a>
@@ -308,12 +309,12 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.005   0.000  10.014</span></code></pre></div>
+<span class="co">#&gt;   0.004   0.001  10.015</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.014   0.001   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.012   0.000   5.019</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
@@ -325,6 +326,106 @@ kbd {
 <li>Submit the same script using a parallel <code>foreach</code> loop and a <code>PSOCK</code> cluster. Does it run? Do the results make sense?</li>
 <li>A newer approach that aims at providing a common interface to many parallel backends is the <code>future</code> package. Can you run the above example using <code>plan(multisession)</code> and <code>future.apply</code>?</li>
 </ul>
+<details><summary>
+Solution <code>mclapply</code>
+</summary><p>To start off, you will have created two files, <code>sleep.r</code> and <code>submit_sleep.sh</code>.</p>
+<p><em>sleep.r</em></p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fsleep</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/summary.mcpfit.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"starting "</span>, <span class="va">i</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+    <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/summary.mcpfit.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"done!"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span></code></pre></div>
+<p><em>submit_sleep.sh</em></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks 1</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task 5</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 1024M</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time 0:10:00</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># export MC_CORES=$SLURM_CPUS_ON_NODE</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> Rscript sleep.r</span></code></pre></div>
+<p>Running this script, you will see in the <code>slurm-XXXXX.out</code> that the runtime is 5 seconds, which corresponds to 2 cores used, not the 5 requested. This is because <code><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">parallel::mclapply</a></code> uses <code>mc.cores = getOption("mc.cores", 2L)</code>, which as you can see defaults to 2. We can check this by inspecting the <code>mclapply</code> function:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">parallel</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">)</span>
+<span class="co">#&gt;                                                                           </span>
+<span class="co">#&gt; 1 function (X, FUN, ..., mc.preschedule = TRUE, mc.set.seed = TRUE,       </span>
+<span class="co">#&gt; 2     mc.silent = FALSE, mc.cores = getOption("mc.cores", 2L),            </span>
+<span class="co">#&gt; 3     mc.cleanup = TRUE, mc.allow.recursive = TRUE, affinity.list = NULL) </span>
+<span class="co">#&gt; 4 {                                                                       </span>
+<span class="co">#&gt; 5     cores &lt;- as.integer(mc.cores)                                       </span>
+<span class="co">#&gt; 6     if ((is.na(cores) || cores &lt; 1L) &amp;&amp; is.null(affinity.list))</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"mc.cores"</span><span class="op">)</span>
+<span class="co">#&gt; NULL</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"mc.cores"</span>, <span class="fl">2L</span><span class="op">)</span>
+<span class="co">#&gt; [1] 2</span></code></pre></div>
+<p>One way to specify the correct number of cores is to uncomment the <code># export</code> line in the submission script. Running this again will report 2 seconds, as expected.</p>
+</details><details><summary>
+Solution <code>foreach</code>
+</summary><p>Using the <code>foreach</code> and <code>%dopar%</code> for parallel processing, we would write the following script:</p>
+<p><em>sleep_foreach.r</em></p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/foreach" class="external-link">foreach</a></span><span class="op">)</span>
+<span class="co"># library(doParallel)</span>
+<span class="co"># registerDoParallel(cores=getOption("mc.cores", 2L))</span>
+
+<span class="va">fsleep</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/summary.mcpfit.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"starting "</span>, <span class="va">i</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+    <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/summary.mcpfit.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"done!"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">foreach</a></span><span class="op">(</span>i<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">%dopar%</a></span> <span class="fu">fsleep</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span></code></pre></div>
+<p><em>submit_sleep_foreach.sh</em></p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks 1</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task 5</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 1024M</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time 0:10:00</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">MC_CORES</span><span class="op">=</span><span class="va">$SLURM_CPUS_ON_NODE</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> Rscript sleep_foreach.r</span></code></pre></div>
+<p>An run in the terminal:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> submit_sleep_foreach.sh</span></code></pre></div>
+<p>We will get the following warning message:</p>
+<blockquote>
+<p>Warning message: _executing %dopar% sequentially: no parallel backend registered</p>
+</blockquote>
+<p>To register the backend, we can uncomment the <code>#</code> line in <code>sleep_foreach.r</code>. Now it also finishes within the expected 2 seconds instead of 10.</p>
+</details><details><summary>
+Solution <code>makeClusterPSOCK</code>
+</summary><p><em>sleep_psock.r</em></p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span>
+<span class="va">cl</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">makePSOCKcluster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"mc.cores"</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">fsleep</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/summary.mcpfit.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"starting "</span>, <span class="va">i</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+    <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/summary.mcpfit.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"done!"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">parLapply</a></span><span class="op">(</span><span class="va">cl</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">stopCluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
+<p><em>submit_sleep_psock.sh</em></p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks 1</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task 5</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 1024M</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time 0:10:00</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">MC_CORES</span><span class="op">=</span><span class="va">$SLURM_CPUS_ON_NODE</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> Rscript sleep_foreach.r</span></code></pre></div>
+<p>An run in the terminal:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> submit_sleep_foreach.sh</span></code></pre></div>
+<p>This will report that it ran in 2 seconds.</p>
+</details>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
