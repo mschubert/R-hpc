@@ -178,17 +178,18 @@ option is to edit all files locally, and then copy them over SSH. So, for
 instance, one could have a local file `test.txt` and copy it over:
 
 ```{sh eval=FALSE}
-scp test.txt <host>:
+scp test.txt sulis:
 ```
 
-where you specified `<host>` in your `~/.ssh/config` before, or otherwise you may
+where you specified `sulis` in your `~/.ssh/config` before, or otherwise you may
 need to specify the user name, key file, and host manually (this will look
 differently if you are using a graphical SSH client). The `:` is used for the
 `scp` command to know which one is the remote end, i.e. you could use the
-following to copy the same file from the remote to your local end:
+following to copy the same file from the remote to your local end (**run this on
+your machine, not sulis**):
 
 ```{sh eval=FALSE}
-scp <host>:test.txt .
+scp sulis:test.txt . # '.' means current directory (`pwd`)
 ```
 
 Here, the `scp` command looks for `test.txt` in your home directory (`~`; this
@@ -204,7 +205,7 @@ timestamps (`-u`) compared to the local files (`-v` will print the files while
 copying):
 
 ```{sh eval=FALSE}
-rsync -uvr <host>:test.txt .
+rsync -uvr sulis:test.txt .
 ```
 
 _Note:_ all copy commands, both from and to Sulis should be run from your local
