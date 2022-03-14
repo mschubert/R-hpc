@@ -62,6 +62,7 @@ if ! command -v R >/dev/null 2>&1; then
     module load GCC/11.2.0 OpenMPI/4.1.1 R/4.1.2
     module load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1
     module load Neovim/0.6.1
+    module load rjags/4-10-R-4.1.2
 fi
 ```
 
