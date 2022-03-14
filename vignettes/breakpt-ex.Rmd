@@ -162,7 +162,7 @@ srun --account su105 --ntasks=1 --cpus-per-task=5 --time 6:00:00 --pty $SHELL
 ```
 
 In `nvim` create the file _compute_breakpt.r_:
-```{R eval=FALSE}
+```{r eval=FALSE}
 library(mcp)
 simulate_data = function(len=1000, bps=c(0,1,2)) {
     sim = data.frame(x=seq_len(len), y=rnorm(len))
@@ -282,7 +282,7 @@ srun Rscript compute_breakpt_manual.r
 ```
 
 _compute_breakpt_manual.r_
-```{sh eval=FALSE}
+```{r eval=FALSE}
 library(mcp)
 
 run_mcp = function(sim) {
@@ -436,7 +436,7 @@ srun --account su105 --ntasks=1 --cpus-per-task=1 --time 6:00:00 --pty $SHELL
 ```
 
 In `nvim` create the file _compute_breakpt_slurmR.r_:
-```{R eval=FALSE}
+```{r eval=FALSE}
 library(slurmR)
 
 run_mcp = function(sim) {
@@ -474,7 +474,7 @@ srun --account su105 --ntasks=1 --cpus-per-task=1 --time 6:00:00 --pty $SHELL
 ```
 
 In `nvim` create the file _compute_breakpt_clustermq.r_:
-```{R eval=FALSE}
+```{r eval=FALSE}
 library(clustermq)
 
 run_mcp = function(sim) {
