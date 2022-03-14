@@ -54,12 +54,16 @@ keep the course consistent, we recommend Windows users to work through the
 materials using the Windows Subsystem for Linux (WSL 2.0). This should be
 available for any up-to-date Windows 10 or later, with [installation
 instructions available
-here](https://docs.microsoft.com/en-us/windows/wsl/install).
+here](https://docs.microsoft.com/en-us/windows/wsl/install). Should this not
+work, we can also use [MobaXterm](https://mobaxterm.mobatek.net/).
 
 Likely, macOS and Linux users are already familiar with their terminal.
 
 _Note:_ On WSL, your home directory (every time we refer to paths starting
 with `~`) will likely be in a folder like `/mnt/c/Users/<UserName>`.
+
+_Note:_ If using MobaXterm, be sure the directory you are running it from is
+local (not a networked file system) and you have write permissions there.
 
 ## Connecting to the computing cluster
 
@@ -131,7 +135,7 @@ First, let's get an overview of which processes are already running on this
 node. This we can do by running the resource monitor `htop`:
 
 ```{sh eval=FALSE}
-htop
+htop # quit by typing 'q'
 ```
 
 In this overview, we can see how many cores the compute node has, how many
@@ -531,7 +535,7 @@ it also finishes within the expected 2 seconds instead of 10.
 </details>
 
 <details>
-<summary>Solution `makeClusterPSOCK`</summary>
+<summary>Solution `makePSOCKcluster`</summary>
 
 _sleep_psock.r_
 ```{r eval=FALSE}
