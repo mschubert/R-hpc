@@ -388,7 +388,8 @@ account name, and the policy on Sulis is to use tasks whenever possible, we
 should modify the submission template to:
 
 * Include the right budgeting account
-* Use `srun` with multiple tasks per index in the job array
+* ~~Use `srun` with multiple tasks per index in the job array~~ this is not
+  actually working (yet)
 
 To address both points, we can create a new file `cmq_slurm.tmpl` with the
 following contents:
@@ -398,7 +399,6 @@ following contents:
 #SBATCH --account={{ account | su105 }}
 #SBATCH --job-name={{ job_name }}
 #SBATCH --array=1-{{ n_jobs }}
-#SBATCH --tasks={{ tasks | 10 }} # increase up to 20 for many function calls
 #SBATCH --mem-per-cpu={{ memory | 1024M }}
 #SBATCH --cpus-per-task={{ cores | 1 }}
 
@@ -415,7 +415,7 @@ options(clustermq.host = "ib0", # faster network
 We can either run these lines in an active R session, or add them to
 `~/.Rprofile` to set automatically each time R is started.
 
-This should make the above example run with 10 tasks per job requested. More
+~~This should make the above example run with 10 tasks per job requested.~~ More
 information on how to configure and use `clustermq` is available at the [User
 Guide vignette](https://mschubert.github.io/clustermq/articles/userguide.html).
 
@@ -492,7 +492,7 @@ run_mcp = function(sim) {
 
 dset = readRDS("sim_breakpt.rds")
 
-res = Q(run_mcp, sim=dset, pkgs="mcp", n_jobs=1)
+res = Q(run_mcp, sim=dset, pkgs="mcp", n_jobs=10)
 
 saveRDS(res, file="breakpt_clustermq.rds")
 ```
