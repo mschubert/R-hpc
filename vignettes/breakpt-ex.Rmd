@@ -398,7 +398,7 @@ following contents:
 #SBATCH --account={{ account | su105 }}
 #SBATCH --job-name={{ job_name }}
 #SBATCH --array=1-{{ n_jobs }}
-#SBATCH --tasks={{ tasks | 5 }} # increase up to 20 for many function calls
+#SBATCH --tasks={{ tasks | 10 }} # increase up to 20 for many function calls
 #SBATCH --mem-per-cpu={{ memory | 1024M }}
 #SBATCH --cpus-per-task={{ cores | 1 }}
 
@@ -415,7 +415,7 @@ options(clustermq.host = "ib0", # faster network
 We can either run these lines in an active R session, or add them to
 `~/.Rprofile` to set automatically each time R is started.
 
-This should make the above example run with 5 tasks per job requested. More
+This should make the above example run with 10 tasks per job requested. More
 information on how to configure and use `clustermq` is available at the [User
 Guide vignette](https://mschubert.github.io/clustermq/articles/userguide.html).
 
@@ -455,7 +455,7 @@ run_mcp = function(sim) {
 
 dset = readRDS("sim_breakpt.rds")
 
-cl = makeSlurmCluster(5, account="su105")
+cl = makeSlurmCluster(10, account="su105")
 res = parLapply(cl, dset, run_mcp)
 stopCluster(cl)
 
