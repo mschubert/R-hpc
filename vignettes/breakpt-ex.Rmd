@@ -76,24 +76,14 @@ user library in your home directory (R will prompt you to do this).
 We can use the following function to simulate our data:
 
 ```{r}
-simulate_data = function(n=1, len=1000, bps=c(0,1,2)) {
-    # simulate one data set with random break points and y coordinates
-    simulate_one = function() {
-        sim = data.frame(x=seq_len(len), y=rnorm(len))
-        for (bp in seq_len(sample(bps, 1))) {
-            loc = sample(seq_len(len), 1)
-            sim$y[loc:len] = sim$y[loc:len] + rnorm(1)
-        }
-        sim
+# simulate one data set with random break points and y coordinates
+simulate_data = function(len=1000, bps=c(0,1,2)) {
+    sim = data.frame(x=seq_len(len), y=rnorm(len))
+    for (bp in seq_len(sample(bps, 1))) {
+        loc = sample(seq_len(len), 1)
+        sim$y[loc:len] = sim$y[loc:len] + rnorm(1)
     }
-
-    # if we simulate one data set, return a data.frame, otherwise a list thereof
-    res = replicate(n, simulate_one(), simplify=FALSE)
-    if (length(res) == 1) {
-        res[[1]]
-    } else {
-        res
-    }
+    sim
 }
 ```
 
@@ -152,8 +142,8 @@ density of the break point itself (blue line close to the bottom of the plot).
 * Use your editor to create the break point simulation script (_hint_: you can
   use <kbd>Esc</kbd>+`:set paste` in nvim to copy-paste the text without
   automatic indentation and `:set nopaste` to return)
-* Simulate data for one and two break points
 * Start an interactive job with 1 task and 5 cores
+* Simulate data for one and two break points
 * Run the `mcp` inference script to try to estimate the breakpoints from the
   data. Do they match to the parameters of your simulation? (_hint_: you can use
   the `plot` function on a `mcp` model object; this will create a `Rplots.pdf`
@@ -161,6 +151,81 @@ density of the break point itself (blue line close to the bottom of the plot).
 * Which options do you see to make this code run faster? (_hint_: there is both
   `mcp`-provided parallelism and sequential steps in the inference code)
 * How much runtime can you save by running computations in parallel?
+
+<details>
+<summary>Solution</summary>
+
+Start the interactive job using:
+
+```{sh eval=FALSE}
+srun --account su105 --ntasks=1 --cpus-per-task=5 --time 6:00:00 --pty $SHELL
+```
+
+In `nvim` create the file _compute_breakpt.r_:
+```{R eval=FALSE}
+library(mcp)
+simulate_data = function(len=1000, bps=c(0,1,2)) {
+    sim = data.frame(x=seq_len(len), y=rnorm(len))
+    for (bp in seq_len(sample(bps, 1))) {
+        loc = sample(seq_len(len), 1)
+        sim$y[loc:len] = sim$y[loc:len] + rnorm(1)
+    }
+    sim
+}
+
+run_mcp = function(sim) {
+    # one unbroken segment, 2 segments with one break point, 3 segments 2 bps
+    mods = list(list(y ~ 1),
+                list(y ~ 1, ~ 1),
+                list(y ~ 1, ~ 1, ~ 1))
+
+    # fit all three models, select the best using leave-one-out
+    fits = lapply(mods, function(m) mcp::mcp(m, data=sim, par_x="x"))
+    compare = as.data.frame(loo::loo_compare(lapply(fits, mcp::loo)))
+    best = as.integer(sub("model", "", rownames(compare)))[1]
+    fits[[best]]
+}
+
+run_mcp_fast = function(sim) {
+    # one unbroken segment, 2 segments with one break point, 3 segments 2 bps
+    mods = list(list(y ~ 1),
+                list(y ~ 1, ~ 1),
+                list(y ~ 1, ~ 1, ~ 1))
+
+    # fit all three models, select the best using leave-one-out
+    fits = parallel::mclapply(mods, function(m) mcp::mcp(m, data=sim, par_x="x", cores=3L))
+#          ^^^^^^^^^^^^^^^^^^                                                    ^^^^^^^^
+    compare = as.data.frame(loo::loo_compare(parallel::mclapply(fits, mcp::loo)))
+#                                            ^^^^^^^^^^^^^^^^^^
+    best = as.integer(sub("model", "", rownames(compare)))[1]
+    fits[[best]]
+}
+
+one_bp = simulate_data(bps=1)
+two_bp = simulate_data(bps=2)
+
+system.time({ r1 = run_mcp(one_bp) })
+system.time({ r2 = run_mcp_fast(one_bp) })
+
+system.time({ r3 = run_mcp(two_bp) })
+system.time({ r4 = run_mcp_fast(two_bp) })
+
+pdf("breakpts.pdf")
+plot(r1)
+plot(r2)
+plot(r3)
+plot(r4)
+dev.off()
+```
+
+We also see that `run_mcp_fast` is not 9 times as fast, but gets slowed down by
+(1) higher run times for more complex models, and (2) only the 5 cores we
+requested.
+
+In general, we want to avoid "oversubscribing" the cores we have requested
+because they will ultimately run slower than if we use what we request.
+
+</details>
 
 ## Bigger data sets
 
@@ -179,6 +244,72 @@ too many resources we will limit the overall amount.
   current task index, and save the resulting model as `.rds` and model plot as
   `.pdf` (_hint_: there are automatic environment variables available for each
   Slurm run, such as [`SLURM_PROCID`](https://slurm.schedmd.com/sbatch.html#lbAK))
+
+<details>
+<summary>Solution simulation</summary>
+
+_sim_breakpt.r_
+```{r eval=FALSE}
+simulate_data = function(len=1000, bps=c(0,1,2)) {
+    sim = data.frame(x=seq_len(len), y=rnorm(len))
+    for (bp in seq_len(sample(bps, 1))) {
+        loc = sample(seq_len(len), 1)
+        sim$y[loc:len] = sim$y[loc:len] + rnorm(1)
+    }
+    sim
+}
+
+sims = replicate(10, simulate_data(), simplify=FALSE)
+saveRDS(sims, file="sim_breakpt.rds")
+```
+
+</details>
+
+<details>
+<summary>Solution breakpoint inference</summary>
+
+_submit_breakpt.sh_
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH --account su105
+#SBATCH --partition compute
+#SBATCH --ntasks 10
+#SBATCH --cpus-per-task 1
+#SBATCH --mem 2048M
+#SBATCH --time 8:00:00
+
+srun Rscript compute_breakpt_manual.r
+```
+
+_compute_breakpt_manual.r_
+```{sh eval=FALSE}
+library(mcp)
+
+run_mcp = function(sim) {
+    # one unbroken segment, 2 segments with one break point, 3 segments 2 bps
+    mods = list(list(y ~ 1),
+                list(y ~ 1, ~ 1),
+                list(y ~ 1, ~ 1, ~ 1))
+
+    # fit all three models, select the best using leave-one-out
+    fits = lapply(mods, function(m) mcp::mcp(m, data=sim, par_x="x"))
+    compare = as.data.frame(loo::loo_compare(lapply(fits, mcp::loo)))
+    best = as.integer(sub("model", "", rownames(compare)))[1]
+    fits[[best]]
+}
+
+idx = Sys.getenv("SLURM_PROCID") # zero-indexed
+
+dset = readRDS("sim_breakpt.rds")
+cur_dset = dset[[as.integer(idx) + 1]] # one-indexed
+
+res = run_mcp(cur_dset)
+pdf(paste0("bp", idx, ".pdf"))
+dev.off()
+saveRDS(res, file=paste0("bp", idx, ".rds"))
+```
+
+</details>
 
 ## HPC-specific packages
 
@@ -294,3 +425,76 @@ Guide vignette](https://mschubert.github.io/clustermq/articles/userguide.html).
   R integration with `nvim`) and
   * Run the workers with `slurmR`
   * Run the workers with `clustermq`
+
+<details>
+<summary>Solution `slurmR`</summary>
+
+If not in an interactive job yet, start it using
+
+```{sh eval=FALSE}
+srun --account su105 --ntasks=1 --cpus-per-task=1 --time 6:00:00 --pty $SHELL
+```
+
+In `nvim` create the file _compute_breakpt_slurmR.r_:
+```{R eval=FALSE}
+library(slurmR)
+
+run_mcp = function(sim) {
+    library(mcp)
+    # one unbroken segment, 2 segments with one break point, 3 segments 2 bps
+    mods = list(list(y ~ 1),
+                list(y ~ 1, ~ 1),
+                list(y ~ 1, ~ 1, ~ 1))
+
+    # fit all three models, select the best using leave-one-out
+    fits = lapply(mods, function(m) mcp::mcp(m, data=sim, par_x="x"))
+    compare = as.data.frame(loo::loo_compare(lapply(fits, mcp::loo)))
+    best = as.integer(sub("model", "", rownames(compare)))[1]
+    fits[[best]]
+}
+
+dset = readRDS("sim_breakpt.rds")
+
+cl = makeSlurmCluster(5, account="su105")
+res = parLapply(cl, dset, run_mcp)
+stopCluster(cl)
+
+saveRDS(res, file="breakpt_slurmR.rds")
+```
+
+</details>
+
+<details>
+<summary>Solution `clustermq`</summary>
+
+If not in an interactive job yet, start it using
+
+```{sh eval=FALSE}
+srun --account su105 --ntasks=1 --cpus-per-task=1 --time 6:00:00 --pty $SHELL
+```
+
+In `nvim` create the file _compute_breakpt_clustermq.r_:
+```{R eval=FALSE}
+library(clustermq)
+
+run_mcp = function(sim) {
+    # one unbroken segment, 2 segments with one break point, 3 segments 2 bps
+    mods = list(list(y ~ 1),
+                list(y ~ 1, ~ 1),
+                list(y ~ 1, ~ 1, ~ 1))
+
+    # fit all three models, select the best using leave-one-out
+    fits = lapply(mods, function(m) mcp::mcp(m, data=sim, par_x="x"))
+    compare = as.data.frame(loo::loo_compare(lapply(fits, mcp::loo)))
+    best = as.integer(sub("model", "", rownames(compare)))[1]
+    fits[[best]]
+}
+
+dset = readRDS("sim_breakpt.rds")
+
+res = Q(run_mcp, sim=dset, pkgs="mcp", n_jobs=1)
+
+saveRDS(res, file="breakpt_clustermq.rds")
+```
+
+</details>
