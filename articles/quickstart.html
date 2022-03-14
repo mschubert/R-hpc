@@ -109,6 +109,7 @@ kbd {
 <p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent, we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation instructions available here</a>. Should this not work, we can also use <a href="https://mobaxterm.mobatek.net/" class="external-link">MobaXterm</a>.</p>
 <p>Likely, macOS and Linux users are already familiar with their terminal.</p>
 <p><em>Note:</em> On WSL, your home directory (every time we refer to paths starting with <code>~</code>) will likely be in a folder like <code>/mnt/c/Users/&lt;UserName&gt;</code>.</p>
+<p><em>Note:</em> If using MobaXterm, be sure the directory you are running it from is local (not a networked file system) and you have write permissions there.</p>
 </div>
 <div class="section level2">
 <h2 id="connecting-to-the-computing-cluster">Connecting to the computing cluster<a class="anchor" aria-label="anchor" href="#connecting-to-the-computing-cluster"></a>
@@ -309,12 +310,12 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.005   0.001  10.016</span></code></pre></div>
+<span class="co">#&gt;   0.005   0.000  10.015</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.014   0.000   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.014   0.000   5.018</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
