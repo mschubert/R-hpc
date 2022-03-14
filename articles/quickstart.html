@@ -181,13 +181,13 @@ kbd {
 <h2 id="copying-files">Copying files<a class="anchor" aria-label="anchor" href="#copying-files"></a>
 </h2>
 <p>There are different options for getting your files to the compute cluster. One option is to edit all files locally, and then copy them over SSH. So, for instance, one could have a local file <code>test.txt</code> and copy it over:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> test.txt <span class="op">&lt;</span>host<span class="op">&gt;</span>:</span></code></pre></div>
-<p>where you specified <code>&lt;host&gt;</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="op">&lt;</span>host<span class="op">&gt;</span>:test.txt .</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> test.txt sulis:</span></code></pre></div>
+<p>where you specified <code>sulis</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end (<strong>run this on your machine, not sulis</strong>):</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> sulis:test.txt . <span class="co"># '.' means current directory (`pwd`)</span></span></code></pre></div>
 <p>Here, the <code>scp</code> command looks for <code>test.txt</code> in your home directory (<code>~</code>; this is the default if no directory is specified) and will copy it to your current directory (<code>.</code>).</p>
 <p>If you want to copy directories you need to use recursive copying, i.e. <code>scp -r</code>.</p>
 <p>Another, and maybe better alternative is the <code>rsync</code> command. This will keep timestamps intact, and can be used to copy only files that have updated timestamps (<code>-u</code>) compared to the local files (<code>-v</code> will print the files while copying):</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> <span class="op">&lt;</span>host<span class="op">&gt;</span>:test.txt .</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> sulis:test.txt .</span></code></pre></div>
 <p><em>Note:</em> all copy commands, both from and to Sulis should be run from your local machine.</p>
 </div>
 <div class="section level2">
@@ -309,12 +309,12 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.005   0.000  10.015</span></code></pre></div>
+<span class="co">#&gt;   0.000   0.005  10.015</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.000   0.013   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.017   0.000   5.021</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
