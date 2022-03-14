@@ -77,7 +77,7 @@ Since this is a bit tedious, we can outsource most of the information to a
 Host sulis
     Hostname login.sulis.ac.uk
     User <username>
-#    ProxyCommand ssh <proxy> -W %h:%p   # when connecting via an SSH proxy
+#    ProxyJump <proxy>   # when connecting via the host entry "<proxy>"
     IdentityFile ~/.ssh/<sulis_rsa>
 ```
 
@@ -178,17 +178,17 @@ option is to edit all files locally, and then copy them over SSH. So, for
 instance, one could have a local file `test.txt` and copy it over:
 
 ```{sh eval=FALSE}
-scp test.txt host:
+scp test.txt <host>:
 ```
 
-where you specified `host` in your `~/.ssh/config` before, or otherwise you may
+where you specified `<host>` in your `~/.ssh/config` before, or otherwise you may
 need to specify the user name, key file, and host manually (this will look
 differently if you are using a graphical SSH client). The `:` is used for the
 `scp` command to know which one is the remote end, i.e. you could use the
 following to copy the same file from the remote to your local end:
 
 ```{sh eval=FALSE}
-scp host:test.txt .
+scp <host>:test.txt .
 ```
 
 Here, the `scp` command looks for `test.txt` in your home directory (`~`; this
@@ -204,8 +204,11 @@ timestamps (`-u`) compared to the local files (`-v` will print the files while
 copying):
 
 ```{sh eval=FALSE}
-rsync -uvr host:test.txt .
+rsync -uvr <host>:test.txt .
 ```
+
+_Note:_ all copy commands, both from and to Sulis should be run from your local
+machine.
 
 ## Editing files
 
@@ -423,3 +426,141 @@ parallel processing using the `%dopar%` command, or the
 * A newer approach that aims at providing a common interface to many parallel
   backends is the `future` package. Can you run the above example using
   `plan(multisession)` and `future.apply`?
+
+<details>
+<summary>Solution `mclapply`</summary>
+
+To start off, you will have created two files, `sleep.r` and `submit_sleep.sh`.
+
+_sleep.r_
+```{r eval=FALSE}
+fsleep = function(i) {
+    print("starting ", i)
+    Sys.sleep(1)
+    print("done!")
+}
+
+system.time({ parallel::mclapply(1:10, fsleep) })
+```
+
+_submit_sleep.sh_
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH --account su105
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 5
+#SBATCH --mem 1024M
+#SBATCH --time 0:10:00
+
+# export MC_CORES=$SLURM_CPUS_ON_NODE
+srun Rscript sleep.r
+```
+
+Running this script, you will see in the `slurm-XXXXX.out` that the runtime is 5
+seconds, which corresponds to 2 cores used, not the 5 requested. This is because
+`parallel::mclapply` uses `mc.cores = getOption("mc.cores", 2L)`, which as you
+can see defaults to 2. We can check this by inspecting the `mclapply` function:
+
+```{r}
+head(parallel::mclapply)
+getOption("mc.cores")
+getOption("mc.cores", 2L)
+```
+
+One way to specify the correct number of cores is to uncomment the `# export`
+line in the submission script. Running this again will report 2 seconds, as
+expected.
+
+</details>
+
+<details>
+<summary>Solution `foreach`</summary>
+
+Using the `foreach` and `%dopar%` for parallel processing, we would write the
+following script:
+
+_sleep_foreach.r_
+```{r eval=FALSE}
+library(foreach)
+# library(doParallel)
+# registerDoParallel(cores=getOption("mc.cores", 2L))
+
+fsleep = function(i) {
+    print("starting ", i)
+    Sys.sleep(1)
+    print("done!")
+}
+
+system.time({ foreach(i=1:10) %dopar% fsleep(i) })
+```
+
+_submit_sleep_foreach.sh_
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH --account su105
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 5
+#SBATCH --mem 1024M
+#SBATCH --time 0:10:00
+
+export MC_CORES=$SLURM_CPUS_ON_NODE
+srun Rscript sleep_foreach.r
+```
+
+An run in the terminal:
+
+```{sh eval=FALSE}
+sbatch submit_sleep_foreach.sh
+```
+
+We will get the following warning message:
+
+> Warning message:
+> _executing %dopar% sequentially: no parallel backend registered
+
+To register the backend, we can uncomment the `#` line in `sleep_foreach.r`. Now
+it also finishes within the expected 2 seconds instead of 10.
+
+</details>
+
+<details>
+<summary>Solution `makeClusterPSOCK`</summary>
+
+_sleep_psock.r_
+```{r eval=FALSE}
+library(parallel)
+cl = makePSOCKcluster(getOption("mc.cores"))
+
+fsleep = function(i) {
+    print("starting ", i)
+    Sys.sleep(1)
+    print("done!")
+}
+
+system.time({ parLapply(cl, 1:10, fsleep) })
+
+stopCluster(cl)
+```
+
+_submit_sleep_psock.sh_
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH --account su105
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 5
+#SBATCH --mem 1024M
+#SBATCH --time 0:10:00
+
+export MC_CORES=$SLURM_CPUS_ON_NODE
+srun Rscript sleep_foreach.r
+```
+
+An run in the terminal:
+
+```{sh eval=FALSE}
+sbatch submit_sleep_foreach.sh
+```
+
+This will report that it ran in 2 seconds.
+
+</details>
