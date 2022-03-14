@@ -106,7 +106,7 @@ kbd {
 <h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
 </h2>
 <p>Working on High-Performance Computing (HPC) facilities, we primarily interface with the systems via a command-line shell. We expect the people in this course to have a wide range of expertise and different starting points concerning the use of the command-line, which will make it easier or more challenging for participants, depending on where they are coming from.</p>
-<p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent, we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation instructions available here</a>.</p>
+<p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent, we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation instructions available here</a>. Should this not work, we can also use <a href="https://mobaxterm.mobatek.net/" class="external-link">MobaXterm</a>.</p>
 <p>Likely, macOS and Linux users are already familiar with their terminal.</p>
 <p><em>Note:</em> On WSL, your home directory (every time we refer to paths starting with <code>~</code>) will likely be in a folder like <code>/mnt/c/Users/&lt;UserName&gt;</code>.</p>
 </div>
@@ -143,7 +143,7 @@ kbd {
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">--account</span> su105 <span class="at">--pty</span> <span class="va">$SHELL</span></span></code></pre></div>
 <p>You will see that your command prompt changes from <code>user@login</code> to <code>user$nodeXX</code>, which means that we are now connected to a compute node instead of the login node. Here, we are allowed to run heavy computations within the resource constraints that we specified.</p>
 <p>First, let’s get an overview of which processes are already running on this node. This we can do by running the resource monitor <code>htop</code>:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">htop</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">htop</span> <span class="co"># quit by typing 'q'</span></span></code></pre></div>
 <p>In this overview, we can see how many cores the compute node has, how many processes are running, and how much memory is used. Depending on how much of those resources we requested (and the overall load), we will see that at least our resource allocation is still free. We do, however, need to stay within our allocation (and not the overall amount of available resources), because otherwise our processes will be terminated automatically.</p>
 <p>If we have loaded the R module beforehand, we’ll see that the <code>$PATH</code> (the environment variable where our shell looks for executables) is still set up to include R. We can check this by asking for the R path:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span></code></pre></div>
@@ -309,12 +309,12 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.000   0.005  10.015</span></code></pre></div>
+<span class="co">#&gt;   0.005   0.001  10.016</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.017   0.000   5.021</span></code></pre></div>
+<span class="co">#&gt;   0.014   0.000   5.020</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
@@ -399,7 +399,7 @@ Solution <code>foreach</code>
 </blockquote>
 <p>To register the backend, we can uncomment the <code>#</code> line in <code>sleep_foreach.r</code>. Now it also finishes within the expected 2 seconds instead of 10.</p>
 </details><details><summary>
-Solution <code>makeClusterPSOCK</code>
+Solution <code>makePSOCKcluster</code>
 </summary><p><em>sleep_psock.r</em></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span>
