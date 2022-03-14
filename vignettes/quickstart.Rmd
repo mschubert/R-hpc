@@ -456,6 +456,12 @@ _submit_sleep.sh_
 srun Rscript sleep.r
 ```
 
+An run in the terminal:
+
+```{sh eval=FALSE}
+sbatch submit_sleep.sh
+```
+
 Running this script, you will see in the `slurm-XXXXX.out` that the runtime is 5
 seconds, which corresponds to 2 cores used, not the 5 requested. This is because
 `parallel::mclapply` uses `mc.cores = getOption("mc.cores", 2L)`, which as you
@@ -552,15 +558,57 @@ _submit_sleep_psock.sh_
 #SBATCH --time 0:10:00
 
 export MC_CORES=$SLURM_CPUS_ON_NODE
-srun Rscript sleep_foreach.r
+srun Rscript sleep_psock.r
 ```
 
 An run in the terminal:
 
 ```{sh eval=FALSE}
-sbatch submit_sleep_foreach.sh
+sbatch submit_sleep_psock.sh
 ```
 
 This will report that it ran in 2 seconds.
+
+</details>
+
+<details>
+<summary>Solution `future`</summary>
+
+_sleep_future.r_
+```{r eval=FALSE}
+library(future.apply)
+plan(multicore)
+
+fsleep = function(i) {
+    print("starting ", i)
+    Sys.sleep(1)
+    print("done!")
+}
+
+system.time({ future_lapply(1:10, fsleep) })
+```
+
+_submit_sleep_future.sh_
+```{sh eval=FALSE}
+#!/bin/sh
+#SBATCH --account su105
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 5
+#SBATCH --mem 1024M
+#SBATCH --time 0:10:00
+
+export MC_CORES=$SLURM_CPUS_ON_NODE
+srun Rscript sleep_future.r
+```
+
+An run in the terminal:
+
+```{sh eval=FALSE}
+sbatch submit_sleep_future.sh
+```
+
+This will report a runtime of a bit over the 2 seconds we saw previously. The
+reason for this is that the `future` framework adds overhead to what the
+`parallel` package provides.
 
 </details>
