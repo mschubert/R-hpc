@@ -102,10 +102,10 @@ resulting data should look something like this:
 
 ```{r}
 sim = simulate_data(bps=1)
-# pdf()  # 
 plot(sim)
-# dev.off()
 ```
+
+On Sulis, the plot will be saved as `Rplots.pdf`.
 
 ## Running break point inference
 
