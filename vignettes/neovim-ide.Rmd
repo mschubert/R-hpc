@@ -111,6 +111,8 @@ set nobackup        " use an undo file instead of backup files
 set undofile
 set undodir=~/.config/nvim/undo
 
+tnoremap <Esc> <C-\><C-n>   " fix Esc in terminal
+
 "colorscheme wombat " uncomment this after installing the plugin
 
 " uncomment after installing Nvim-R
