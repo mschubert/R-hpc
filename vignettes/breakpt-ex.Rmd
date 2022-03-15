@@ -93,6 +93,7 @@ resulting data should look something like this:
 ```{r}
 sim = simulate_data(bps=1)
 plot(sim)
+# dev.off()  # close the device to complete the plot
 ```
 
 On Sulis, the plot will be saved as `Rplots.pdf`.
@@ -131,6 +132,7 @@ The resulting model should look something like this:
 ```{r}
 mod = run_mcp(sim)
 plot(mod)
+# dev.off()  # close the device to complete the plot
 ```
 
 Here, we see the `x` and `y` coordinates of our observations as before, but in

@@ -71,7 +71,7 @@ This will look like the following:
 #!/bin/sh
 #SBATCH commands go here
 
-RDS = bp1.rds bp2.rds bp3.rds ...
+RDS="bp1.rds bp2.rds bp3.rds ..."
 
 for FILE in $RDS; do
     ( srun Rscript compute_breakpt.r $FILE && Rscript plot.r $FILE ) &
