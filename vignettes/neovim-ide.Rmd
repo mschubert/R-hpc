@@ -158,6 +158,7 @@ We will add the following plugins:
 * Nvim-R
 * YouCompleteMe
 * Wombat color scheme
+* Whitespace highlighter
 
 For this, we uncomment in the file `~/.config/nvim/init.vim`:
 
@@ -166,6 +167,7 @@ call plug#begin()
     Plug 'sheerun/vim-wombat-scheme'
     Plug 'jalvesaq/Nvim-R'
     Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+    Plug 'ntpeters/vim-better-whitespace'
 call plug#end()
 ```
 
@@ -268,4 +270,10 @@ bind - split-window -v -c "#{pane_current_path}"
 # swap current pane with the next/previous one
 bind > swap-pane -D
 bind < swap-pane -U
+```
+
+After editing this config file, reload it using, from the Sulis shell:
+
+```{sh eval=FALSE}
+tmux source-file ~/.tmux.conf
 ```
