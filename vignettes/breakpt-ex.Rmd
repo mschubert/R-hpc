@@ -406,7 +406,7 @@ following contents:
 
 module load rjags/4-10-R-4.1.2 # this we will need for our example
 
-CMQ_AUTH={{ auth }} srun R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 We can then use this newly created template by:
