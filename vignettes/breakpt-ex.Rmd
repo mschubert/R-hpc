@@ -382,7 +382,7 @@ module load GCCcore/10.2.0 ZeroMQ/4.3.3
 # install.packages("clustermq") if you have not installed the package yet
 library(clustermq)
 
-Q(function(i) Sys.sleep(1), x=1:10, n_jobs=1)
+Q(function(i) Sys.sleep(1), i=1:10, n_jobs=1)
 ```
 
 The package relies on a [submission
