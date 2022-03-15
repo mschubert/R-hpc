@@ -65,6 +65,10 @@ with `~`) will likely be in a folder like `/mnt/c/Users/<UserName>`.
 _Note:_ If using MobaXterm, be sure the directory you are running it from is
 local (not a networked file system) and you have write permissions there.
 
+_Note:_ If using WSL, you'll [want to
+enable](https://www.howtogeek.com/353200/how-to-enable-copy-and-paste-keyboard-shortcuts-in-windows-10s-bash-shell/)
+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> for copy-paste.
+
 ## Connecting to the computing cluster
 
 Command-line connections to the HPC are established using the Secure Shell tool
