@@ -119,6 +119,7 @@ tnoremap <Esc> <C-\><C-n>   " fix Esc in terminal
 "    Plug 'sheerun/vim-wombat-scheme'
 "    Plug 'jalvesaq/Nvim-R'
 "    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+"    Plug 'ntpeters/vim-better-whitespace'
 "call plug#end()
 
 "colorscheme wombat " uncomment this after installing the plugin
@@ -127,6 +128,7 @@ tnoremap <Esc> <C-\><C-n>   " fix Esc in terminal
 "let g:R_assign = 0 " do (not) map _ to <- for assignment
 "vmap <Space> <Plug>RDSendSelection
 "nmap <Space> <Plug>RDSendLine
+" ^^^^^^ make sure there are are no extra spaces at the end of those lines
 ```
 
 #### Plugins
