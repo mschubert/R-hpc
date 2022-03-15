@@ -113,6 +113,14 @@ set undodir=~/.config/nvim/undo
 
 tnoremap <Esc> <C-\><C-n>   " fix Esc in terminal
 
+" Uncomment this when adding the plugins\
+# Note: this has to be listed before using the plugins (below)
+"call plug#begin()
+"    Plug 'sheerun/vim-wombat-scheme'
+"    Plug 'jalvesaq/Nvim-R'
+"    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+"call plug#end()
+
 "colorscheme wombat " uncomment this after installing the plugin
 
 " uncomment after installing Nvim-R
@@ -149,7 +157,7 @@ We will add the following plugins:
 * YouCompleteMe
 * Wombat color scheme
 
-For this, we add to the file `~/.config/nvim/init.vim`:
+For this, we uncomment in the file `~/.config/nvim/init.vim`:
 
 ```{vim eval=FALSE}
 call plug#begin()
