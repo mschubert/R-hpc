@@ -350,8 +350,6 @@ for this is `slurmR::makeSlurmCluster(ntasks)`, which can then be used with the
 # install.packages("slurmR") if you have not installed the package yet
 library(slurmR)
 
-opts_slurmR$set_preamble("module load rjags/4-10-R-4.1.2")
-
 cl = makeSlurmCluster(5, account="su105")
 
 system.time({ parSapply(cl, 1:10, function(i) Sys.sleep(1)) })
@@ -365,6 +363,11 @@ need to:
 
 * Include the right budgeting account
 
+The jobs started automatically by slurmR will not inherit the same
+environment used in your interactive job. This will not be a problem
+if you've added module comamnds to your `.bashrc` file as in the previous
+exercises. 
+
 More details can be found in their [Getting Started
 vignette](https://uscbiostats.github.io/slurmR/articles/getting-started.html).
 
@@ -372,11 +375,13 @@ vignette](https://uscbiostats.github.io/slurmR/articles/getting-started.html).
 
 The [`clustermq`](https://mschubert.github.io/clustermq/) package provides an
 interface to multiple HPC schedulers (including Slurm) via the ZeroMQ socket
-library, available as a module:
+library, available as a module assuming the prerequisite modules for R have
+already been loaded then;
 
 ```{sh eval=FALSE}
-module load GCCcore/10.2.0 ZeroMQ/4.3.3
+module load ZeroMQ/4.3.4
 ```
+will load a compatible ZeroMQ module.
 
 ```{r eval=FALSE}
 # install.packages("clustermq") if you have not installed the package yet
