@@ -67,7 +67,8 @@ local (not a networked file system) and you have write permissions there.
 
 _Note:_ If using WSL, you'll [want to
 enable](https://www.howtogeek.com/353200/how-to-enable-copy-and-paste-keyboard-shortcuts-in-windows-10s-bash-shell/)
-<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> for copy-paste.
+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> for copy-paste. Otherwise you will
+still be able to use <kbd>Shift</kbd>+<kbd>Right Mouse</kbd>.
 
 ## Connecting to the computing cluster
 
