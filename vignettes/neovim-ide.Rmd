@@ -123,10 +123,10 @@ tnoremap <Esc> <C-\><C-n>   " fix Esc in terminal
 
 "colorscheme wombat " uncomment this after installing the plugin
 
-" uncomment after installing Nvim-R
+" uncomment after installing Nvim-R, use <Space> to send commands to R
 "let g:R_assign = 0 " do (not) map _ to <- for assignment
-"vmap <Space> <Plug>RDSendSelection " use <Space> to send a selection to R
-"nmap <Space> <Plug>RDSendLine      " use <Space> to send a line to R
+"vmap <Space> <Plug>RDSendSelection
+"nmap <Space> <Plug>RDSendLine
 ```
 
 #### Plugins
