@@ -110,7 +110,7 @@ kbd {
 <p>Likely, macOS and Linux users are already familiar with their terminal.</p>
 <p><em>Note:</em> On WSL, your home directory (every time we refer to paths starting with <code>~</code>) will likely be in a folder like <code>/mnt/c/Users/&lt;UserName&gt;</code>.</p>
 <p><em>Note:</em> If using MobaXterm, be sure the directory you are running it from is local (not a networked file system) and you have write permissions there.</p>
-<p><em>Note:</em> If using WSL, you’ll <a href="https://www.howtogeek.com/353200/how-to-enable-copy-and-paste-keyboard-shortcuts-in-windows-10s-bash-shell/" class="external-link">want to enable</a> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> for copy-paste.</p>
+<p><em>Note:</em> If using WSL, you’ll <a href="https://www.howtogeek.com/353200/how-to-enable-copy-and-paste-keyboard-shortcuts-in-windows-10s-bash-shell/" class="external-link">want to enable</a> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> for copy-paste. Otherwise you will still be able to use <kbd>Shift</kbd>+<kbd>Right Mouse</kbd>.</p>
 </div>
 <div class="section level2">
 <h2 id="connecting-to-the-computing-cluster">Connecting to the computing cluster<a class="anchor" aria-label="anchor" href="#connecting-to-the-computing-cluster"></a>
@@ -311,7 +311,7 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.005   0.000  10.017</span></code></pre></div>
+<span class="co">#&gt;   0.005   0.000  10.016</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
