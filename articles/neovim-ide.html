@@ -161,7 +161,7 @@ tnoremap &lt;Esc&gt; &lt;C-\&gt;&lt;C-n&gt;   " fix Esc in terminal
 <p>(Neo)vim and emacs are powerful editors that have many useful functions not only for text editing, but also interactive development in R and other languages.</p>
 <p>The functionality for this is provided by plugins. For emacs this is mainly ESS (emacs speaks statistics), and for nvim we use the plugin manager <code>plug</code>, that we can install using the following lines of code:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fLo</span> ~/.local/share/nvim/site/autoload/plug.vim <span class="at">--create-dirs</span> <span class="dt">\</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim<span class="st">'</span></span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim</span></code></pre></div>
 <p>This will copy the file <code>plug.vim</code> from Github into your <em>~/.local/share/nvim/site/autoload</em> directory.</p>
 <p><em>Note:</em> before executing bits of code from the internet, make sure they are from trustworthy sources. In this case, it comes from the <a href="https://github.com/junegunn/vim-plug" class="external-link">nvim-plug</a> Github repository, which is the official source.</p>
 <p>We will add the following plugins:</p>
