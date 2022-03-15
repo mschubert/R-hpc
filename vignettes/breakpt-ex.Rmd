@@ -348,6 +348,8 @@ for this is `slurmR::makeSlurmCluster(ntasks)`, which can then be used with the
 # install.packages("slurmR") if you have not installed the package yet
 library(slurmR)
 
+opts_slurmR$set_preamble("module load rjags/4-10-R-4.1.2")
+
 cl = makeSlurmCluster(5, account="su105")
 
 system.time({ parSapply(cl, 1:10, function(i) Sys.sleep(1)) })
@@ -401,6 +403,8 @@ following contents:
 #SBATCH --array=1-{{ n_jobs }}
 #SBATCH --mem-per-cpu={{ memory | 1024M }}
 #SBATCH --cpus-per-task={{ cores | 1 }}
+
+module load rjags/4-10-R-4.1.2 # this we will need for our example
 
 CMQ_AUTH={{ auth }} srun R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
