@@ -132,7 +132,7 @@ we can install using the following lines of code:
 
 ```{sh eval=FALSE}
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 ```
 
 This will copy the file `plug.vim` from Github into your
