@@ -179,12 +179,14 @@ tnoremap &lt;Esc&gt; &lt;C-\&gt;&lt;C-n&gt;   " fix Esc in terminal
 <li>Nvim-R</li>
 <li>YouCompleteMe</li>
 <li>Wombat color scheme</li>
+<li>Whitespace highlighter</li>
 </ul>
 <p>For this, we uncomment in the file <code>~/.config/nvim/init.vim</code>:</p>
 <pre class="vim"><code>call plug#begin()
     Plug 'sheerun/vim-wombat-scheme'
     Plug 'jalvesaq/Nvim-R'
     Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+    Plug 'ntpeters/vim-better-whitespace'
 call plug#end()</code></pre>
 <p>Note that we need Python and <code>pynvim</code> for this to work:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCCcore/11.2.0 Python/3.9.6 CMake/3.21.1</span>
@@ -237,6 +239,8 @@ call plug#end()</code></pre>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># swap current pane with the next/previous one</span></span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="bu">bind</span> <span class="op">&gt;</span> swap-pane <span class="at">-D</span></span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="bu">bind</span> <span class="op">&lt;</span> swap-pane <span class="at">-U</span></span></code></pre></div>
+<p>After editing this config file, reload it using, from the Sulis shell:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> source-file ~/.tmux.conf</span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
