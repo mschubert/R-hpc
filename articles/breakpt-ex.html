@@ -170,7 +170,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 5019</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 18.9 seconds</span>
+<span class="co">#&gt; Finished sampling in 17.8 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -180,7 +180,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 75.9 seconds</span>
+<span class="co">#&gt; Finished sampling in 73.3 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -190,9 +190,8 @@ kbd {
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 157 seconds</span>
-<span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
-
+<span class="co">#&gt; Finished sampling in 141.5 seconds</span>
+<span class="co">#&gt; Warning: Some Pareto k diagnostic values are slightly high. See help('pareto-k-diagnostic') for details.</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/plot.mcpfit.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
 <p><img src="breakpt-ex_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
@@ -356,6 +355,8 @@ Solution breakpoint inference
 <code class="sourceCode R"><span class="co"># install.packages("slurmR") if you have not installed the package yet</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/slurmR" class="external-link">slurmR</a></span><span class="op">)</span>
 
+<span class="va">opts_slurmR</span><span class="op">$</span><span class="fu">set_preamble</span><span class="op">(</span><span class="st">"module load rjags/4-10-R-4.1.2"</span><span class="op">)</span>
+
 <span class="va">cl</span> <span class="op">=</span> <span class="fu">makeSlurmCluster</span><span class="op">(</span><span class="fl">5</span>, account<span class="op">=</span><span class="st">"su105"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parSapply</span><span class="op">(</span><span class="va">cl</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
@@ -391,7 +392,9 @@ Solution breakpoint inference
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem-per-cpu={{ memory | 1024M }}</span></span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task={{ cores | 1 }}</span></span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="va">CMQ_AUTH</span><span class="op">=</span>{{ <span class="ex">auth</span> }} srun R <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load rjags/4-10-R-4.1.2 <span class="co"># this we will need for our example</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="va">CMQ_AUTH</span><span class="op">=</span>{{ <span class="ex">auth</span> }} srun R <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>We can then use this newly created template by:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.host <span class="op">=</span> <span class="st">"ib0"</span>, <span class="co"># faster network</span>
