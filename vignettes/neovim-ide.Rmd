@@ -125,8 +125,8 @@ tnoremap <Esc> <C-\><C-n>   " fix Esc in terminal
 
 " uncomment after installing Nvim-R
 "let g:R_assign = 0 " do (not) map _ to <- for assignment
-"vmap <Space> <Plug>RDSendSelection " use <Space> key to send a selection to R
-"nmap <Space> <Plug>RDSendLine      " use <Space> key to send a line to R
+"vmap <Space> <Plug>RDSendSelection " use <Space> to send a selection to R
+"nmap <Space> <Plug>RDSendLine      " use <Space> to send a line to R
 ```
 
 #### Plugins
