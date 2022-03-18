@@ -375,14 +375,14 @@ interface to multiple HPC schedulers (including Slurm) via the ZeroMQ socket
 library, available as a module:
 
 ```{sh eval=FALSE}
-module load GCCcore/10.2.0 ZeroMQ/4.3.3
+module load ZeroMQ/4.3.4
 ```
 
 ```{r eval=FALSE}
 # install.packages("clustermq") if you have not installed the package yet
 library(clustermq)
 
-Q(function(i) Sys.sleep(1), i=1:10, n_jobs=1)
+Q(function(i) Sys.sleep(1), i=1:10, n_jobs=5)
 ```
 
 The package relies on a [submission

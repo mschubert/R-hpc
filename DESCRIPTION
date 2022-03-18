@@ -1,6 +1,6 @@
 Package: Rhpc
 Title: R-hpc Course Material
-Version: 0.0.1
+Version: 0.1.0
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre'),

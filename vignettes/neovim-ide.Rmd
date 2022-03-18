@@ -104,7 +104,7 @@ set expandtab       " tab as spaces (optional)
 set shiftwidth=4    " shift by 4 spaces
 set tabstop=4       " tab by 4 spaces
 set smarttab        " tab to same positions
-set autoindent      " automatic indentation
+"set autoindent      " automatic indentation (good for editing, less for pasting)
 set mouse=a         " be able to use mouse clicks
 
 set nobackup        " use an undo file instead of backup files
