@@ -196,7 +196,7 @@ data, and return the model that fits best:</p>
 <span class="co">#&gt;    Total graph size: 5019</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 19 seconds</span>
+<span class="co">#&gt; Finished sampling in 18.3 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -206,7 +206,7 @@ data, and return the model that fits best:</p>
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 72.6 seconds</span>
+<span class="co">#&gt; Finished sampling in 79.2 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -216,7 +216,7 @@ data, and return the model that fits best:</p>
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 152.1 seconds</span>
+<span class="co">#&gt; Finished sampling in 146.4 seconds</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
@@ -457,7 +457,7 @@ Started vignette</a>.</p>
 <p>The <a href="https://mschubert.github.io/clustermq/" class="external-link"><code>clustermq</code></a>
 package provides an interface to multiple HPC schedulers (including
 Slurm) via the ZeroMQ socket library, available as a module:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load ZeroMQ/4.3.4</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load GCCcore/11.2.0 ZeroMQ/4.3.4</span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("clustermq") if you have not installed the package yet</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mschubert.github.io/clustermq/" class="external-link">clustermq</a></span><span class="op">)</span>
@@ -469,22 +469,21 @@ need to supply an account name, and the policy on Sulis is to use tasks
 whenever possible, we should modify the submission template to:</p>
 <ul>
 <li>Include the right budgeting account</li>
-<li>
-<del>Use <code>srun</code> with multiple tasks per index in the job
-array</del> this is not actually working (yet)</li>
+<li>Use <code>srun</code> with multiple tasks per index in the job array
+this is not actually working (yet)</li>
 </ul>
 <p>To address both points, we can create a new file
 <code>cmq_slurm.tmpl</code> with the following contents:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account={{ account | su105 }}</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name={{ job_name }}</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --array=1-{{ n_jobs }}</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks={{ n_jobs }}</span></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem-per-cpu={{ memory | 1024M }}</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task={{ cores | 1 }}</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load rjags/4-10-R-4.1.2 <span class="co"># this we will need for our example</span></span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="va">CMQ_AUTH</span><span class="op">=</span>{{ <span class="ex">auth</span> }} R <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="va">CMQ_AUTH</span><span class="op">=</span>{{ <span class="ex">auth</span> }} srun R <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>We can then use this newly created template by:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.host <span class="op">=</span> <span class="st">"ib0"</span>, <span class="co"># faster network</span>
@@ -492,8 +491,8 @@ array</del> this is not actually working (yet)</li>
 <p>We can either run these lines in an active R session, or add them to
 <code>~/.Rprofile</code> to set automatically each time R is
 started.</p>
-<p><del>This should make the above example run with 10 tasks per job
-requested.</del> More information on how to configure and use
+<p>This should make the above example run within tasks instead of an
+array job. More information on how to configure and use
 <code>clustermq</code> is available at the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User
 Guide vignette</a>.</p>
 </div>

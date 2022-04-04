@@ -473,7 +473,7 @@ like <code>lapply</code>:</p>
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.004   0.001  10.017</span></code></pre></div>
+<span class="co">#&gt;   0.005   0.000  10.014</span></code></pre></div>
 <p>This will, unsurprisingly, take 10 times as long as an individual
 call to <code>fsleep()</code>. For many use cases, it makes sense to run
 computations (done in reality instead of just sleeping) in parallel. The
@@ -483,7 +483,7 @@ installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.013   0.000   5.020</span></code></pre></div>
+<span class="co">#&gt;   0.013   0.000   5.021</span></code></pre></div>
 <p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a>
 package that enables parallel processing using the <code>%dopar%</code>
 command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a>
