@@ -105,28 +105,56 @@ kbd {
 <div class="section level2">
 <h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
 </h2>
-<p>Working on High-Performance Computing (HPC) facilities, we primarily interface with the systems via a command-line shell. We expect the people in this course to have a wide range of expertise and different starting points concerning the use of the command-line, which will make it easier or more challenging for participants, depending on where they are coming from.</p>
-<p>Similarly, we expect participants to start with different operating systems, e.g. not only Windows but also macOS and different Linux flavors. In order to keep the course consistent, we recommend Windows users to work through the materials using the Windows Subsystem for Linux (WSL 2.0). This should be available for any up-to-date Windows 10 or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation instructions available here</a>. Should this not work, we can also use <a href="https://mobaxterm.mobatek.net/" class="external-link">MobaXterm</a>.</p>
-<p>Likely, macOS and Linux users are already familiar with their terminal.</p>
-<p><em>Note:</em> On WSL, your home directory (every time we refer to paths starting with <code>~</code>) will likely be in a folder like <code>/mnt/c/Users/&lt;UserName&gt;</code>.</p>
-<p><em>Note:</em> If using MobaXterm, be sure the directory you are running it from is local (not a networked file system) and you have write permissions there.</p>
-<p><em>Note:</em> If using WSL, you’ll <a href="https://www.howtogeek.com/353200/how-to-enable-copy-and-paste-keyboard-shortcuts-in-windows-10s-bash-shell/" class="external-link">want to enable</a> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> for copy-paste. Otherwise you will still be able to use <kbd>Shift</kbd>+<kbd>Right Mouse</kbd>.</p>
+<p>Working on High-Performance Computing (HPC) facilities, we primarily
+interface with the systems via a command-line shell. We expect the
+people in this course to have a wide range of expertise and different
+starting points concerning the use of the command-line, which will make
+it easier or more challenging for participants, depending on where they
+are coming from.</p>
+<p>Similarly, we expect participants to start with different operating
+systems, e.g. not only Windows but also macOS and different Linux
+flavors. In order to keep the course consistent, we recommend Windows
+users to work through the materials using the Windows Subsystem for
+Linux (WSL 2.0). This should be available for any up-to-date Windows 10
+or later, with <a href="https://docs.microsoft.com/en-us/windows/wsl/install" class="external-link">installation
+instructions available here</a>. Should this not work, we can also use
+<a href="https://mobaxterm.mobatek.net/" class="external-link">MobaXterm</a>.</p>
+<p>Likely, macOS and Linux users are already familiar with their
+terminal.</p>
+<p><em>Note:</em> On WSL, your home directory (every time we refer to
+paths starting with <code>~</code>) will likely be in a folder like
+<code>/mnt/c/Users/&lt;UserName&gt;</code>.</p>
+<p><em>Note:</em> If using MobaXterm, be sure the directory you are
+running it from is local (not a networked file system) and you have
+write permissions there.</p>
+<p><em>Note:</em> If using WSL, you’ll <a href="https://www.howtogeek.com/353200/how-to-enable-copy-and-paste-keyboard-shortcuts-in-windows-10s-bash-shell/" class="external-link">want
+to enable</a> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> for
+copy-paste. Otherwise you will still be able to use
+<kbd>Shift</kbd>+<kbd>Right Mouse</kbd>.</p>
 </div>
 <div class="section level2">
 <h2 id="connecting-to-the-computing-cluster">Connecting to the computing cluster<a class="anchor" aria-label="anchor" href="#connecting-to-the-computing-cluster"></a>
 </h2>
-<p>Command-line connections to the HPC are established using the Secure Shell tool (SSH). From a terminal, you can connect to Sulis using the following line:</p>
+<p>Command-line connections to the HPC are established using the Secure
+Shell tool (SSH). From a terminal, you can connect to Sulis using the
+following line:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> <span class="op">&lt;</span>your keyfile<span class="op">&gt;</span> <span class="op">&lt;</span>user<span class="op">&gt;</span>@login.sulis.ac.uk</span></code></pre></div>
-<p>Since this is a bit tedious, we can outsource most of the information to a <code>~/.ssh/config</code> file with the following contents:</p>
+<p>Since this is a bit tedious, we can outsource most of the information
+to a <code>~/.ssh/config</code> file with the following contents:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Host</span> sulis</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Hostname</span> login.sulis.ac.uk</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">User</span> <span class="op">&lt;</span>username<span class="op">&gt;</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#    ProxyJump &lt;proxy&gt;   # when connecting via the host entry "&lt;proxy&gt;"</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">IdentityFile</span> ~/.ssh/<span class="op">&lt;</span>sulis_rsa<span class="op">&gt;</span></span></code></pre></div>
-<p>Having it set up like this, establishing the connection is as simple as typing:</p>
+<p>Having it set up like this, establishing the connection is as simple
+as typing:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> sulis</span></code></pre></div>
-<p>This will come in handy when not only connecting to the HPC once, but also copying files between your local machine and the HPC.</p>
-<p>Note, however, that in both cases you will still need to decrypt your private key file with your passphrase (which, at least on macOS and Linux, can be automated using your OS keychain) and the 2FA token once a day.</p>
+<p>This will come in handy when not only connecting to the HPC once, but
+also copying files between your local machine and the HPC.</p>
+<p>Note, however, that in both cases you will still need to decrypt your
+private key file with your passphrase (which, at least on macOS and
+Linux, can be automated using your OS keychain) and the 2FA token once a
+day.</p>
 <p>Login to Sulis is documented here in more detail: <a href="https://sulis-hpc.github.io/gettingstarted/connecting/" class="external-link uri">https://sulis-hpc.github.io/gettingstarted/connecting/</a></p>
 </div>
 <div class="section level2">
@@ -141,15 +169,37 @@ kbd {
 <div class="section level2">
 <h2 id="running-an-interactive-job">Running an interactive job<a class="anchor" aria-label="anchor" href="#running-an-interactive-job"></a>
 </h2>
-<p>The simplest way to request an interactive job is to use Slurm’s <code>srun</code> command where we specify that we want to run a shell (specified by the <code>$SHELL</code> environment variable) that is connected to our terminal input and output (<code>--pty</code>). In addition, we need to specify the account our requested resources will be budgeted to (<code>--account</code>) We can do that by running:</p>
+<p>The simplest way to request an interactive job is to use Slurm’s
+<code>srun</code> command where we specify that we want to run a shell
+(specified by the <code>$SHELL</code> environment variable) that is
+connected to our terminal input and output (<code>--pty</code>). In
+addition, we need to specify the account our requested resources will be
+budgeted to (<code>--account</code>) We can do that by running:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">--account</span> su105 <span class="at">--pty</span> <span class="va">$SHELL</span></span></code></pre></div>
-<p>You will see that your command prompt changes from <code>user@login</code> to <code>user$nodeXX</code>, which means that we are now connected to a compute node instead of the login node. Here, we are allowed to run heavy computations within the resource constraints that we specified.</p>
-<p>First, let’s get an overview of which processes are already running on this node. This we can do by running the resource monitor <code>htop</code>:</p>
+<p>You will see that your command prompt changes from
+<code>user@login</code> to <code>user$nodeXX</code>, which means that we
+are now connected to a compute node instead of the login node. Here, we
+are allowed to run heavy computations within the resource constraints
+that we specified.</p>
+<p>First, let’s get an overview of which processes are already running
+on this node. This we can do by running the resource monitor
+<code>htop</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">htop</span> <span class="co"># quit by typing 'q'</span></span></code></pre></div>
-<p>In this overview, we can see how many cores the compute node has, how many processes are running, and how much memory is used. Depending on how much of those resources we requested (and the overall load), we will see that at least our resource allocation is still free. We do, however, need to stay within our allocation (and not the overall amount of available resources), because otherwise our processes will be terminated automatically.</p>
-<p>If we have loaded the R module beforehand, we’ll see that the <code>$PATH</code> (the environment variable where our shell looks for executables) is still set up to include R. We can check this by asking for the R path:</p>
+<p>In this overview, we can see how many cores the compute node has, how
+many processes are running, and how much memory is used. Depending on
+how much of those resources we requested (and the overall load), we will
+see that at least our resource allocation is still free. We do, however,
+need to stay within our allocation (and not the overall amount of
+available resources), because otherwise our processes will be terminated
+automatically.</p>
+<p>If we have loaded the R module beforehand, we’ll see that the
+<code>$PATH</code> (the environment variable where our shell looks for
+executables) is still set up to include R. We can check this by asking
+for the R path:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span></code></pre></div>
-<p>We can then run <code>R</code> via the command-line, as we can on our local machines as well. Running <code>R</code> will give us an R command prompt:</p>
+<p>We can then run <code>R</code> via the command-line, as we can on our
+local machines as well. Running <code>R</code> will give us an R command
+prompt:</p>
 <pre><code><span class="co">#&gt; </span>
 <span class="co">#&gt; R version 4.1.3 (2022-03-10) -- "One Push-Up"</span>
 <span class="co">#&gt; Copyright (C) 2022 The R Foundation for Statistical Computing</span>
@@ -171,57 +221,129 @@ kbd {
 <span class="co">#&gt; </span>
 <span class="co">#&gt; &gt; </span>
 <span class="co">#&gt; &gt;</span></code></pre>
-<p>We can use <code>R</code> as we could use the R shell in e.g. RStudio as well:</p>
+<p>We can use <code>R</code> as we could use the R shell in e.g. RStudio
+as well:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">x</span> <span class="op">=</span> <span class="fl">5</span>
 <span class="va">y</span> <span class="op">=</span> <span class="fl">3</span>
 <span class="va">x</span> <span class="op">*</span> <span class="va">y</span>
 <span class="co">#&gt; [1] 15</span></code></pre></div>
-<p>When we are done, we can exit <code>R</code> by typing <code>quit(save="no")</code>. Note that after exiting <code>R</code> the interactive job is still running. We can exit the job shell by typing <code>exit</code> or <kbd>Ctrl</kbd>+<kbd>d</kbd>, unless we started the interactive job with <code>srun --pty R</code> instead of <code>$SHELL</code>. Note that exiting the job will sometimes display the message <code>Exited with exit code 127</code>. This can safely be ignored.</p>
+<p>When we are done, we can exit <code>R</code> by typing
+<code>quit(save="no")</code>. Note that after exiting <code>R</code> the
+interactive job is still running. We can exit the job shell by typing
+<code>exit</code> or <kbd>Ctrl</kbd>+<kbd>d</kbd>, unless we started the
+interactive job with <code>srun --pty R</code> instead of
+<code>$SHELL</code>. Note that exiting the job will sometimes display
+the message <code>Exited with exit code 127</code>. This can safely be
+ignored.</p>
 </div>
 <div class="section level2">
 <h2 id="copying-files">Copying files<a class="anchor" aria-label="anchor" href="#copying-files"></a>
 </h2>
-<p>There are different options for getting your files to the compute cluster. One option is to edit all files locally, and then copy them over SSH. So, for instance, one could have a local file <code>test.txt</code> and copy it over:</p>
+<p>There are different options for getting your files to the compute
+cluster. One option is to edit all files locally, and then copy them
+over SSH. So, for instance, one could have a local file
+<code>test.txt</code> and copy it over:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> test.txt sulis:</span></code></pre></div>
-<p>where you specified <code>sulis</code> in your <code>~/.ssh/config</code> before, or otherwise you may need to specify the user name, key file, and host manually (this will look differently if you are using a graphical SSH client). The <code>:</code> is used for the <code>scp</code> command to know which one is the remote end, i.e. you could use the following to copy the same file from the remote to your local end (<strong>run this on your machine, not sulis</strong>):</p>
+<p>where you specified <code>sulis</code> in your
+<code>~/.ssh/config</code> before, or otherwise you may need to specify
+the user name, key file, and host manually (this will look differently
+if you are using a graphical SSH client). The <code>:</code> is used for
+the <code>scp</code> command to know which one is the remote end,
+i.e. you could use the following to copy the same file from the remote
+to your local end (<strong>run this on your machine, not
+sulis</strong>):</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> sulis:test.txt . <span class="co"># '.' means current directory (`pwd`)</span></span></code></pre></div>
-<p>Here, the <code>scp</code> command looks for <code>test.txt</code> in your home directory (<code>~</code>; this is the default if no directory is specified) and will copy it to your current directory (<code>.</code>).</p>
-<p>If you want to copy directories you need to use recursive copying, i.e. <code>scp -r</code>.</p>
-<p>Another, and maybe better alternative is the <code>rsync</code> command. This will keep timestamps intact, and can be used to copy only files that have updated timestamps (<code>-u</code>) compared to the local files (<code>-v</code> will print the files while copying):</p>
+<p>Here, the <code>scp</code> command looks for <code>test.txt</code> in
+your home directory (<code>~</code>; this is the default if no directory
+is specified) and will copy it to your current directory
+(<code>.</code>).</p>
+<p>If you want to copy directories you need to use recursive copying,
+i.e. <code>scp -r</code>.</p>
+<p>Another, and maybe better alternative is the <code>rsync</code>
+command. This will keep timestamps intact, and can be used to copy only
+files that have updated timestamps (<code>-u</code>) compared to the
+local files (<code>-v</code> will print the files while copying):</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-uvr</span> sulis:test.txt .</span></code></pre></div>
-<p><em>Note:</em> all copy commands, both from and to Sulis should be run from your local machine.</p>
+<p><em>Note:</em> all copy commands, both from and to Sulis should be
+run from your local machine.</p>
 </div>
 <div class="section level2">
 <h2 id="editing-files">Editing files<a class="anchor" aria-label="anchor" href="#editing-files"></a>
 </h2>
-<p>For either making small changes or iterative work, it is often more convenient to edit files directly on the computing cluster instead of editing them locally and then copy them.</p>
-<p>There are multiple text-based editors that work in a terminal, such as <code>nano</code>, <code>emacs</code> and <code>vim</code>. <code>nano</code> is a minimalist editor without any special features, and is often recommended to users new to the terminal. The problem with that is that we get very quickly stuck at a local optimum, where we can make simple changes to a file, but will never get features such as syntax highlighting. The other two editors on the other hand either have or can be extended to have any/every feature imaginable.</p>
-<p>This is why for this course, we will show some basic features of <code>nvim</code> (<code>neovim</code>, a modern implementation of <code>vim</code>) instead. If you are already a user of <code>emacs</code>, please feel free to use this editor instead.</p>
+<p>For either making small changes or iterative work, it is often more
+convenient to edit files directly on the computing cluster instead of
+editing them locally and then copy them.</p>
+<p>There are multiple text-based editors that work in a terminal, such
+as <code>nano</code>, <code>emacs</code> and <code>vim</code>.
+<code>nano</code> is a minimalist editor without any special features,
+and is often recommended to users new to the terminal. The problem with
+that is that we get very quickly stuck at a local optimum, where we can
+make simple changes to a file, but will never get features such as
+syntax highlighting. The other two editors on the other hand either have
+or can be extended to have any/every feature imaginable.</p>
+<p>This is why for this course, we will show some basic features of
+<code>nvim</code> (<code>neovim</code>, a modern implementation of
+<code>vim</code>) instead. If you are already a user of
+<code>emacs</code>, please feel free to use this editor instead.</p>
 <p>To edit a simple text file, we can run:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first run 'module load Neovim/0.6.1' if in an interactive job</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nvim</span> myfile.txt</span></code></pre></div>
-<p>You will see that the console gets cleared, and we are shown the contents of an empty file instead. Try typing a couple of <kbd>a</kbd> in the file:</p>
+<p>You will see that the console gets cleared, and we are shown the
+contents of an empty file instead. Try typing a couple of <kbd>a</kbd>
+in the file:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aaaa</span></span></code></pre></div>
-<p>You will see the characters show up, as you would in other editor as well. Notice, however, that the first <kbd>a</kbd> you typed did not show up, only all subsequent <kbd>a</kbd>s. This is because this editor has a “normal” and an “edit” mode. By typing the first <kbd>a</kbd>, we switched from the former to the latter.</p>
-<p>We can now use <kbd>Esc</kbd> to switch back from the edit to the normal mode. In normal mode, we can type <code>:w</code> <kbd>Enter</kbd> to write the file, or <code>:wq</code> to write the file and quit the editor. <code>:q!</code> will exit without saving any changes.</p>
-<p>This is all you need to know to make <code>vim</code> as useful as <code>nano</code>. However, if we now for instance edit an <code>.r</code> file we also get syntax highlighting. This feature alone makes it worth to use <code>nvim</code> instead of <code>nano</code>.</p>
-<p>You can explore more features by running <code>vimtutor</code> from the command-line, which is an interactive tool to familiarize yourself with how to use it effectively.</p>
+<p>You will see the characters show up, as you would in other editor as
+well. Notice, however, that the first <kbd>a</kbd> you typed did not
+show up, only all subsequent <kbd>a</kbd>s. This is because this editor
+has a “normal” and an “edit” mode. By typing the first <kbd>a</kbd>, we
+switched from the former to the latter.</p>
+<p>We can now use <kbd>Esc</kbd> to switch back from the edit to the
+normal mode. In normal mode, we can type <code>:w</code>
+<kbd>Enter</kbd> to write the file, or <code>:wq</code> to write the
+file and quit the editor. <code>:q!</code> will exit without saving any
+changes.</p>
+<p>This is all you need to know to make <code>vim</code> as useful as
+<code>nano</code>. However, if we now for instance edit an
+<code>.r</code> file we also get syntax highlighting. This feature alone
+makes it worth to use <code>nvim</code> instead of
+<code>nano</code>.</p>
+<p>You can explore more features by running <code>vimtutor</code> from
+the command-line, which is an interactive tool to familiarize yourself
+with how to use it effectively.</p>
 </div>
 <div class="section level2">
 <h2 id="compute-resources">Compute resources<a class="anchor" aria-label="anchor" href="#compute-resources"></a>
 </h2>
-<p>For now, we have submitted our job while specifying only the minimum required parameters and relying on the defaults for others. For instance, we have not specific a <code>partition</code>, which is one of several job queues that we can submit our jobs to. To get an overview of which are available, we can use the <code>sinfo</code> command:</p>
+<p>For now, we have submitted our job while specifying only the minimum
+required parameters and relying on the defaults for others. For
+instance, we have not specific a <code>partition</code>, which is one of
+several job queues that we can submit our jobs to. To get an overview of
+which are available, we can use the <code>sinfo</code> command:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sinfo</span></span></code></pre></div>
-<p>Here, we see the different partitions listed and a number of nodes associated with each of them, including the walltime (maximum amount of time that a job can request) for each queue. You will see that one queue is marked with a <code>*</code>. This denotes the default queue, which we have been using by not specifying any particular queue via the <code>--partition</code> parameter.</p>
-<p>One argument that we did specify but not explain in more detail is the <code>account</code>. This specifies the connection between your user name and a collection of resources available that you can use, which are then subtracted from this budget. You can check which accounts your user has access to by typing:</p>
+<p>Here, we see the different partitions listed and a number of nodes
+associated with each of them, including the walltime (maximum amount of
+time that a job can request) for each queue. You will see that one queue
+is marked with a <code>*</code>. This denotes the default queue, which
+we have been using by not specifying any particular queue via the
+<code>--partition</code> parameter.</p>
+<p>One argument that we did specify but not explain in more detail is
+the <code>account</code>. This specifies the connection between your
+user name and a collection of resources available that you can use,
+which are then subtracted from this budget. You can check which accounts
+your user has access to by typing:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sacctmgr</span> show associations where user=<span class="op">&lt;</span>your user name<span class="op">&gt;</span></span></code></pre></div>
-<p>You will likely only belong to one account, or project, at this time (which was the one created for this course).</p>
+<p>You will likely only belong to one account, or project, at this time
+(which was the one created for this course).</p>
 </div>
 <div class="section level2">
 <h2 id="job-submission-scripts">Job submission scripts<a class="anchor" aria-label="anchor" href="#job-submission-scripts"></a>
 </h2>
-<p>Usually, you will want to run more complex computations than can be specified with a single <code>srun</code>. For running multiple commands on multiple hosts, it is often better to specify the resource requirements and exact commands using a job submission script. This may look like the following:</p>
+<p>Usually, you will want to run more complex computations than can be
+specified with a single <code>srun</code>. For running multiple commands
+on multiple hosts, it is often better to specify the resource
+requirements and exact commands using a job submission script. This may
+look like the following:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account su105</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --partition compute</span></span>
@@ -231,52 +353,91 @@ kbd {
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time 8:00:00</span></span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> uname <span class="at">-n</span></span></code></pre></div>
-<p>We can submit this script by saving it to a script file and then running <code>sbatch &lt;script&gt;</code>. It should tell us something like:</p>
+<p>We can submit this script by saving it to a script file and then
+running <code>sbatch &lt;script&gt;</code>. It should tell us something
+like:</p>
 <blockquote>
 <p>Submitted batch job 1290046</p>
 </blockquote>
-<p>where the number is the identifier of the job (and will be different with multiple runs).</p>
-<p>After we started it, we can check all jobs that our user is running by typing:</p>
+<p>where the number is the identifier of the job (and will be different
+with multiple runs).</p>
+<p>After we started it, we can check all jobs that our user is running
+by typing:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">squeue</span> <span class="at">-u</span> <span class="op">&lt;</span>username<span class="op">&gt;</span></span></code></pre></div>
-<p>This should list a job with the above ID, show that it is currently running, and the node the job is running on. We can also get detailed information about the job using <code>scontrol</code>:</p>
+<p>This should list a job with the above ID, show that it is currently
+running, and the node the job is running on. We can also get detailed
+information about the job using <code>scontrol</code>:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scontrol</span> show jobid <span class="op">&lt;</span>jobid<span class="op">&gt;</span></span></code></pre></div>
-<p>This information will be available while the job is running and some (short) time after it is finished. We can now also see resources that we did not explicitly request, e.g. that the time limit was 1 hour, that we used the <code>compute</code> partition, and were able to use up to 1-4 Gb of memory (may depend on the node).</p>
-<p>After the job started, it will create an output file called <code>slurm-xxxxxx.out</code> (where <code>xxxxxx</code> is the job id) with the standard output of the command (the standard output is what would have otherwise been printed to the console). After it is finished, it will contain the output of <code>uname -n</code>, which is the name of the node the command was run on. If all went well, it should contain <code>nodeXX</code> and not <code>login</code>, which means that it was run on one of the compute nodes.</p>
+<p>This information will be available while the job is running and some
+(short) time after it is finished. We can now also see resources that we
+did not explicitly request, e.g. that the time limit was 1 hour, that we
+used the <code>compute</code> partition, and were able to use up to 1-4
+Gb of memory (may depend on the node).</p>
+<p>After the job started, it will create an output file called
+<code>slurm-xxxxxx.out</code> (where <code>xxxxxx</code> is the job id)
+with the standard output of the command (the standard output is what
+would have otherwise been printed to the console). After it is finished,
+it will contain the output of <code>uname -n</code>, which is the name
+of the node the command was run on. If all went well, it should contain
+<code>nodeXX</code> and not <code>login</code>, which means that it was
+run on one of the compute nodes.</p>
 <p>There’s quite a few lines in there, so let’s break this down:</p>
 <ul>
 <li>
-<code>#!/bin/sh</code> is called a shebang and specifies which application should be used to run the script, which is required by <code>sbatch</code> (otherwise it will refuse to submit the job)</li>
+<code>#!/bin/sh</code> is called a shebang and specifies which
+application should be used to run the script, which is required by
+<code>sbatch</code> (otherwise it will refuse to submit the job)</li>
 <li>
-<code>#SBATCH --account</code> is needed again to budget the resources correctly</li>
+<code>#SBATCH --account</code> is needed again to budget the
+resources correctly</li>
 <li>
-<code>#SBATCH --partition</code> this time we specify the <code>compute</code> partition explicitly</li>
+<code>#SBATCH --partition</code> this time we specify the
+<code>compute</code> partition explicitly</li>
 <li>
-<code>#SBATCH --ntasks</code> lists the tasks (computations) this job contains</li>
+<code>#SBATCH --ntasks</code> lists the tasks (computations) this
+job contains</li>
 <li>
-<code>#SBATCH --cpus-per-task</code> specifies the numbers of CPUs per task</li>
+<code>#SBATCH --cpus-per-task</code> specifies the numbers of CPUs
+per task</li>
 <li>
-<code>#SBATCH --mem</code> specifies the amount of memory requested; this is in total, other options include <code>--mem-per-task</code>, <code>--mem-per-cpu</code>, or <code>--mem-per-gpu</code>. Memory multipliers such as <code>K</code>, <code>M</code> and <code>G</code> are supported (kilobytes, megabytes and gigabytes, respectively).</li>
+<code>#SBATCH --mem</code> specifies the amount of memory requested;
+this is in total, other options include <code>--mem-per-task</code>,
+<code>--mem-per-cpu</code>, or <code>--mem-per-gpu</code>. Memory
+multipliers such as <code>K</code>, <code>M</code> and <code>G</code>
+are supported (kilobytes, megabytes and gigabytes, respectively).</li>
 <li>
-<code>#SBATCH --time</code> is the maximum amount of time after which the job will be terminated (<code>dd-hh:mm:ss</code>)</li>
+<code>#SBATCH --time</code> is the maximum amount of time after
+which the job will be terminated (<code>dd-hh:mm:ss</code>)</li>
 <li>
-<code>#SBATCH</code> commands need to be directly following the shebang, otherwise they will be ignored</li>
+<code>#SBATCH</code> commands need to be directly following the
+shebang, otherwise they will be ignored</li>
 <li>
-<code>srun</code> specifies the command to be run; it is not required for running individual computations, but helps set up parallel helpers, such as running the call once per task, or e.g. setting up MPI if this is used</li>
+<code>srun</code> specifies the command to be run; it is not
+required for running individual computations, but helps set up parallel
+helpers, such as running the call once per task, or e.g. setting up MPI
+if this is used</li>
 </ul>
 <div class="section level3">
 <h3 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
 </h3>
 <ul>
-<li>Create a batch submission script like the one above using the command-line editor on the cluster</li>
-<li>Submit it using <code>sbatch &lt;script&gt;</code>, both with and without the <code>srun</code>. What changes?</li>
-<li>What happens when we change the <code>ntasks</code> parameter to <code>2</code>, both with and without the <code>srun</code> command?</li>
+<li>Create a batch submission script like the one above using the
+command-line editor on the cluster</li>
+<li>Submit it using <code>sbatch &lt;script&gt;</code>, both with and
+without the <code>srun</code>. What changes?</li>
+<li>What happens when we change the <code>ntasks</code> parameter to
+<code>2</code>, both with and without the <code>srun</code>
+command?</li>
 </ul>
 </div>
 </div>
 <div class="section level2">
 <h2 id="r-on-hpc">R on HPC<a class="anchor" aria-label="anchor" href="#r-on-hpc"></a>
 </h2>
-<p>R’s best developed parallel capabilities is running computations on multiple cores. Here, we will briefly outline which approaches are commonly used. For simplicity, let’s consider a simple R function that sleeps for a couple of seconds:</p>
+<p>R’s best developed parallel capabilities is running computations on
+multiple cores. Here, we will briefly outline which approaches are
+commonly used. For simplicity, let’s consider a simple R function that
+sleeps for a couple of seconds:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fsleep</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
     <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/summary.mcpfit.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"starting "</span>, <span class="va">i</span><span class="op">)</span>
@@ -287,7 +448,8 @@ kbd {
 <span class="fu">fsleep</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span></code></pre></div>
-<p>If we need to call this function 10 times, we could use something like <code>lapply</code>:</p>
+<p>If we need to call this function 10 times, we could use something
+like <code>lapply</code>:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt; [1] "starting "</span>
@@ -311,26 +473,45 @@ kbd {
 <span class="co">#&gt; [1] "starting "</span>
 <span class="co">#&gt; [1] "done!"</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.005   0.000  10.016</span></code></pre></div>
-<p>This will, unsurprisingly, take 10 times as long as an individual call to <code>fsleep()</code>. For many use cases, it makes sense to run computations (done in reality instead of just sleeping) in parallel. The probably most integrated solution is the <code>parallel</code> package, which is one of the core packages distributed with a standard R installation by default.</p>
+<span class="co">#&gt;   0.004   0.001  10.017</span></code></pre></div>
+<p>This will, unsurprisingly, take 10 times as long as an individual
+call to <code>fsleep()</code>. For many use cases, it makes sense to run
+computations (done in reality instead of just sleeping) in parallel. The
+probably most integrated solution is the <code>parallel</code> package,
+which is one of the core packages distributed with a standard R
+installation by default.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="va">fsleep</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.004   0.009   5.020</span></code></pre></div>
-<p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a> package that enables parallel processing using the <code>%dopar%</code> command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a> package by using <code>plan(multisession)</code>.</p>
+<span class="co">#&gt;   0.013   0.000   5.020</span></code></pre></div>
+<p>However, there are also other possibilities, e.g. the <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a>
+package that enables parallel processing using the <code>%dopar%</code>
+command, or the <a href="https://cran.r-project.org/package=future" class="external-link"><code>future</code></a>
+package by using <code>plan(multisession)</code>.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
 </h4>
 <ul>
-<li>Create a <code>sleep.r</code> script based on the <code>fsleep</code> function and the <code>mclapply</code> above calling the function 10 times. Print the result of <code><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time()</a></code>.</li>
-<li>Create a submission script that will request 1 task with 5 cores (<em>hint:</em> see the documentation <a href="https://sulis-hpc.github.io/gettingstarted/batchq/singlenode" class="external-link">here</a>)</li>
-<li>Submit this script as a job. Does it run successfully? How long does it take according to the job log file? Does the runtime make sense?</li>
-<li>Submit the same script using a parallel <code>foreach</code> <code>%dopar%</code> loop and a <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>. Does it run? Do the results make sense?</li>
-<li>A newer approach that aims at providing a common interface to many parallel backends is the <code>future</code> package. Can you run the above example using <code>plan(multisession)</code> and <code>future.apply</code>?</li>
+<li>Create a <code>sleep.r</code> script based on the
+<code>fsleep</code> function and the <code>mclapply</code> above calling
+the function 10 times. Print the result of
+<code><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time()</a></code>.</li>
+<li>Create a submission script that will request 1 task with 5 cores
+(<em>hint:</em> see the documentation <a href="https://sulis-hpc.github.io/gettingstarted/batchq/singlenode" class="external-link">here</a>)</li>
+<li>Submit this script as a job. Does it run successfully? How long does
+it take according to the job log file? Does the runtime make sense?</li>
+<li>Submit the same script using a parallel <code>foreach</code>
+<code>%dopar%</code> loop and a <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>.
+Does it run? Do the results make sense?</li>
+<li>A newer approach that aims at providing a common interface to many
+parallel backends is the <code>future</code> package. Can you run the
+above example using <code>plan(multisession)</code> and
+<code>future.apply</code>?</li>
 </ul>
 <details><summary>
 Solution <code>mclapply</code>
-</summary><p>To start off, you will have created two files, <code>sleep.r</code> and <code>submit_sleep.sh</code>.</p>
+</summary><p>To start off, you will have created two files, <code>sleep.r</code>
+and <code>submit_sleep.sh</code>.</p>
 <p><em>sleep.r</em></p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fsleep</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span>
@@ -352,7 +533,12 @@ Solution <code>mclapply</code>
 <span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> Rscript sleep.r</span></code></pre></div>
 <p>An run in the terminal:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> submit_sleep.sh</span></code></pre></div>
-<p>Running this script, you will see in the <code>slurm-XXXXX.out</code> that the runtime is 5 seconds, which corresponds to 2 cores used, not the 5 requested. This is because <code><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">parallel::mclapply</a></code> uses <code>mc.cores = getOption("mc.cores", 2L)</code>, which as you can see defaults to 2. We can check this by inspecting the <code>mclapply</code> function:</p>
+<p>Running this script, you will see in the <code>slurm-XXXXX.out</code>
+that the runtime is 5 seconds, which corresponds to 2 cores used, not
+the 5 requested. This is because <code><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">parallel::mclapply</a></code> uses
+<code>mc.cores = getOption("mc.cores", 2L)</code>, which as you can see
+defaults to 2. We can check this by inspecting the <code>mclapply</code>
+function:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">parallel</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">)</span>
 <span class="co">#&gt;                                                                           </span>
@@ -366,10 +552,13 @@ Solution <code>mclapply</code>
 <span class="co">#&gt; NULL</span>
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"mc.cores"</span>, <span class="fl">2L</span><span class="op">)</span>
 <span class="co">#&gt; [1] 2</span></code></pre></div>
-<p>One way to specify the correct number of cores is to uncomment the <code># export</code> line in the submission script. Running this again will report 2 seconds, as expected.</p>
+<p>One way to specify the correct number of cores is to uncomment the
+<code># export</code> line in the submission script. Running this again
+will report 2 seconds, as expected.</p>
 </details><details><summary>
 Solution <code>foreach</code>
-</summary><p>Using the <code>foreach</code> and <code>%dopar%</code> for parallel processing, we would write the following script:</p>
+</summary><p>Using the <code>foreach</code> and <code>%dopar%</code> for parallel
+processing, we would write the following script:</p>
 <p><em>sleep_foreach.r</em></p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/foreach" class="external-link">foreach</a></span><span class="op">)</span>
@@ -397,9 +586,12 @@ Solution <code>foreach</code>
 <div class="sourceCode" id="cb30"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> submit_sleep_foreach.sh</span></code></pre></div>
 <p>We will get the following warning message:</p>
 <blockquote>
-<p>Warning message: _executing %dopar% sequentially: no parallel backend registered</p>
+<p>Warning message: _executing %dopar% sequentially: no parallel backend
+registered</p>
 </blockquote>
-<p>To register the backend, we can uncomment the <code>#</code> line in <code>sleep_foreach.r</code>. Now it also finishes within the expected 2 seconds instead of 10.</p>
+<p>To register the backend, we can uncomment the <code>#</code> line in
+<code>sleep_foreach.r</code>. Now it also finishes within the expected 2
+seconds instead of 10.</p>
 </details><details><summary>
 Solution <code>makePSOCKcluster</code>
 </summary><p><em>sleep_psock.r</em></p>
@@ -455,7 +647,10 @@ Solution <code>future</code>
 <span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> Rscript sleep_future.r</span></code></pre></div>
 <p>An run in the terminal:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> submit_sleep_future.sh</span></code></pre></div>
-<p>This will report a runtime of a bit over the 2 seconds we saw previously. The reason for this is that the <code>future</code> framework adds overhead to what the <code>parallel</code> package provides.</p>
+<p>This will report a runtime of a bit over the 2 seconds we saw
+previously. The reason for this is that the <code>future</code>
+framework adds overhead to what the <code>parallel</code> package
+provides.</p>
 </details>
 </div>
 </div>
@@ -467,12 +662,13 @@ Solution <code>future</code>
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Michael Schubert.</p>
+<p>Developed by Michael Schubert, Warwick University.</p>
 </div>
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
     </footer>

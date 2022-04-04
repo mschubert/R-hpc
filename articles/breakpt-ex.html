@@ -105,12 +105,31 @@ kbd {
 <div class="section level2">
 <h2 id="change-points-in-a-time-course">Change points in a time course<a class="anchor" aria-label="anchor" href="#change-points-in-a-time-course"></a>
 </h2>
-<p>In order to not only use <code><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep()</a></code> but do some actual computations, we chose as a toy problem the inference of change points in a time course with repeated observations of the same measurement. First, we will start off with simulating data that has an increasing integer <code>x</code> coordinate (time point) and a continuous <code>y</code> coordinate (observation value).</p>
-<p>We will then use the <code>mcp</code> package to detect a point in <code>x</code> where the value of <code>y</code> changes abruptly. This package is able to infer many different kinds of change points. Here, we make use of changing intercepts with constant, normally distributed noise. The package is built on <code>rjags</code>, which uses a Gibbs sampling Markov-Chain Monte Carlo (MCMC).</p>
-<p>These computations are usually computationally expensive, but the individual sampling chains are independent of each other. This makes this kind of problem amenable to extensive parallelization.</p>
-<p>Fortunately, the <code>rjags</code> package is already provided as a module, so we can load it using the following command:</p>
+<p>In order to not only use <code><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep()</a></code> but do some actual
+computations, we chose as a toy problem the inference of change points
+in a time course with repeated observations of the same measurement.
+First, we will start off with simulating data that has an increasing
+integer <code>x</code> coordinate (time point) and a continuous
+<code>y</code> coordinate (observation value).</p>
+<p>We will then use the <code>mcp</code> package to detect a point in
+<code>x</code> where the value of <code>y</code> changes abruptly. This
+package is able to infer many different kinds of change points. Here, we
+make use of changing intercepts with constant, normally distributed
+noise. The package is built on <code>rjags</code>, which uses a Gibbs
+sampling Markov-Chain Monte Carlo (MCMC).</p>
+<p>These computations are usually computationally expensive, but the
+individual sampling chains are independent of each other. This makes
+this kind of problem amenable to extensive parallelization.</p>
+<p>Fortunately, the <code>rjags</code> package is already provided as a
+module, so we can load it using the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load rjags/4-10-R-4.1.2</span></code></pre></div>
-<p>After running this, it should be available from within R via <code><a href="https://mcmc-jags.sourceforge.io" class="external-link">library(rjags)</a></code>. We still need to <code>install.packages("mcp")</code>, but as this does not require external tools it should work without issues. Note that the system-wide R package library is not writable for individual users, so you have to use your user library in your home directory (R will prompt you to do this).</p>
+<p>After running this, it should be available from within R via
+<code><a href="https://mcmc-jags.sourceforge.io" class="external-link">library(rjags)</a></code>. We still need to
+<code>install.packages("mcp")</code>, but as this does not require
+external tools it should work without issues. Note that the system-wide
+R package library is not writable for individual users, so you have to
+use your user library in your home directory (R will prompt you to do
+this).</p>
 </div>
 <div class="section level2">
 <h2 id="creating-a-function-to-simulate-data">Creating a function to simulate data<a class="anchor" aria-label="anchor" href="#creating-a-function-to-simulate-data"></a>
@@ -126,7 +145,9 @@ kbd {
     <span class="op">}</span>
     <span class="va">sim</span>
 <span class="op">}</span></code></pre></div>
-<p>This will randomly generate one sample with our <code>x</code> and <code>y</code> coordinates. The resulting data should look something like this:</p>
+<p>This will randomly generate one sample with our <code>x</code> and
+<code>y</code> coordinates. The resulting data should look something
+like this:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sim</span> <span class="op">=</span> <span class="fu">simulate_data</span><span class="op">(</span>bps<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></code></pre></div>
@@ -138,13 +159,16 @@ kbd {
 <div class="section level2">
 <h2 id="running-break-point-inference">Running break point inference<a class="anchor" aria-label="anchor" href="#running-break-point-inference"></a>
 </h2>
-<p>We can now use our simulated data as a starting point to infer the breakpoints that we simulated. Using the <code>mcp</code> package, we run three different models:</p>
+<p>We can now use our simulated data as a starting point to infer the
+breakpoints that we simulated. Using the <code>mcp</code> package, we
+run three different models:</p>
 <ul>
 <li>One segment, no breakpoints</li>
 <li>Two segments, one breakpoint</li>
 <li>Three segments, two breakpoints</li>
 </ul>
-<p>When then compare these models in terms of how well they fit the data, and return the model that fits best:</p>
+<p>When then compare these models in terms of how well they fit the
+data, and return the model that fits best:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lindeloev.github.io/mcp/" class="external-link">mcp</a></span><span class="op">)</span>
 
@@ -172,7 +196,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 5019</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 18.7 seconds</span>
+<span class="co">#&gt; Finished sampling in 19 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -182,7 +206,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 12020</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 81.5 seconds</span>
+<span class="co">#&gt; Finished sampling in 72.6 seconds</span>
 <span class="co">#&gt; Compiling model graph</span>
 <span class="co">#&gt;    Resolving undeclared variables</span>
 <span class="co">#&gt;    Allocating nodes</span>
@@ -192,7 +216,7 @@ kbd {
 <span class="co">#&gt;    Total graph size: 17028</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Initializing model</span>
-<span class="co">#&gt; Finished sampling in 152 seconds</span>
+<span class="co">#&gt; Finished sampling in 152.1 seconds</span>
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
 
 <span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span>
@@ -200,17 +224,31 @@ kbd {
 <p><img src="breakpt-ex_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># dev.off()  # close the device to complete the plot</span></code></pre></div>
-<p>Here, we see the <code>x</code> and <code>y</code> coordinates of our observations as before, but in addition we see the traces of the intercepts (grey lines) and the probability density of the break point itself (blue line close to the bottom of the plot).</p>
+<p>Here, we see the <code>x</code> and <code>y</code> coordinates of our
+observations as before, but in addition we see the traces of the
+intercepts (grey lines) and the probability density of the break point
+itself (blue line close to the bottom of the plot).</p>
 <div class="section level4">
 <h4 id="exercise">Exercise<a class="anchor" aria-label="anchor" href="#exercise"></a>
 </h4>
 <ul>
-<li>Use your editor to create the break point simulation script (<em>hint</em>: you can use <kbd>Esc</kbd>+<code>:set paste</code> in nvim to copy-paste the text without automatic indentation and <code>:set nopaste</code> to return)</li>
+<li>Use your editor to create the break point simulation script
+(<em>hint</em>: you can use <kbd>Esc</kbd>+<code>:set paste</code> in
+nvim to copy-paste the text without automatic indentation and
+<code>:set nopaste</code> to return)</li>
 <li>Start an interactive job with 1 task and 5 cores</li>
 <li>Simulate data for one and two break points</li>
-<li>Run the <code>mcp</code> inference script to try to estimate the breakpoints from the data. Do they match to the parameters of your simulation? (<em>hint</em>: you can use the <code>plot</code> function on a <code>mcp</code> model object; this will create a <code>Rplots.pdf</code> after which you’ll need to <code><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off()</a></code> and copy to your local machine)</li>
-<li>Which options do you see to make this code run faster? (<em>hint</em>: there is both <code>mcp</code>-provided parallelism and sequential steps in the inference code)</li>
-<li>How much runtime can you save by running computations in parallel?</li>
+<li>Run the <code>mcp</code> inference script to try to estimate the
+breakpoints from the data. Do they match to the parameters of your
+simulation? (<em>hint</em>: you can use the <code>plot</code> function
+on a <code>mcp</code> model object; this will create a
+<code>Rplots.pdf</code> after which you’ll need to
+<code><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off()</a></code> and copy to your local machine)</li>
+<li>Which options do you see to make this code run faster?
+(<em>hint</em>: there is both <code>mcp</code>-provided parallelism and
+sequential steps in the inference code)</li>
+<li>How much runtime can you save by running computations in
+parallel?</li>
 </ul>
 <details><summary>
 Solution
@@ -271,22 +309,36 @@ Solution
 <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/plot.mcpfit.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r3</span><span class="op">)</span>
 <span class="fu"><a href="https://lindeloev.github.io/mcp/reference/plot.mcpfit.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r4</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>We also see that <code>run_mcp_fast</code> is not 9 times as fast, but gets slowed down by (1) higher run times for more complex models, and (2) only the 5 cores we requested.</p>
-<p>In general, we want to avoid “oversubscribing” the cores we have requested because they will ultimately run slower than if we use what we request.</p>
+<p>We also see that <code>run_mcp_fast</code> is not 9 times as fast,
+but gets slowed down by (1) higher run times for more complex models,
+and (2) only the 5 cores we requested.</p>
+<p>In general, we want to avoid “oversubscribing” the cores we have
+requested because they will ultimately run slower than if we use what we
+request.</p>
 </details>
 </div>
 </div>
 <div class="section level2">
 <h2 id="bigger-data-sets">Bigger data sets<a class="anchor" aria-label="anchor" href="#bigger-data-sets"></a>
 </h2>
-<p>The strategy of reserving a node with many CPUs works well up to the extent where we want to process more computations in parallel than there are CPUs on a given node (modern nodes often have up to 128 cores/threads).</p>
-<p>Here, we want to simulate such a big computational task, but for this to not use too many resources we will limit the overall amount.</p>
+<p>The strategy of reserving a node with many CPUs works well up to the
+extent where we want to process more computations in parallel than there
+are CPUs on a given node (modern nodes often have up to 128
+cores/threads).</p>
+<p>Here, we want to simulate such a big computational task, but for this
+to not use too many resources we will limit the overall amount.</p>
 <div class="section level4">
 <h4 id="exercise-1">Exercise<a class="anchor" aria-label="anchor" href="#exercise-1"></a>
 </h4>
 <ul>
-<li>Simulate 10 breakpoint data sets using the function above, and save the resulting list in an <code>.rds</code> object (using <code>saveRDS</code>)</li>
-<li>Write a submission script with 10 tasks that load the object, subset the current task index, and save the resulting model as <code>.rds</code> and model plot as <code>.pdf</code> (<em>hint</em>: there are automatic environment variables available for each Slurm run, such as <a href="https://slurm.schedmd.com/sbatch.html#lbAK" class="external-link"><code>SLURM_PROCID</code></a>)</li>
+<li>Simulate 10 breakpoint data sets using the function above, and save
+the resulting list in an <code>.rds</code> object (using
+<code>saveRDS</code>)</li>
+<li>Write a submission script with 10 tasks that load the object, subset
+the current task index, and save the resulting model as
+<code>.rds</code> and model plot as <code>.pdf</code> (<em>hint</em>:
+there are automatic environment variables available for each Slurm run,
+such as <a href="https://slurm.schedmd.com/sbatch.html#lbAK" class="external-link"><code>SLURM_PROCID</code></a>)</li>
 </ul>
 <details><summary>
 Solution simulation
@@ -347,49 +399,82 @@ Solution breakpoint inference
 <div class="section level2">
 <h2 id="hpc-specific-packages">HPC-specific packages<a class="anchor" aria-label="anchor" href="#hpc-specific-packages"></a>
 </h2>
-<p>There are also multiple packages available to make use of HPC resources from within R. That is to say, that R will submit a job or multiple jobs, and retrieve the result back to the session.</p>
-<p>There are, for instance, the packages <code>BatchJobs</code> and <code>batchtools</code>. These make use of the networked file system to write each call and its arguments to a file, that is then retrieved by the job and executed. These packages are robust for small numbers of jobs, however, they will put a substantial strain on the file system for a high number of function calls.</p>
-<p>Instead, we will introduce two packages that make only little use of the shared file system, <code>slurmR</code> and <code>clustermq</code>. (Note that I am the author of the latter, so there’s a bit of a conflict of interest here.)</p>
-<p>There is also the <a href="https://cran.r-project.org/package=Rmpi" class="external-link"><code>Rmpi</code></a> package, which provides an R cluster object for e.g. <code>parLapply</code> of multiple instances communicating over different nodes. There is an example on the <a href="https://sulis-hpc.github.io/gettingstarted/batchq/mpi#parallel-cluster-in-r" class="external-link">Sulis docs</a>, however, it requires additional setup in the job submission script.</p>
+<p>There are also multiple packages available to make use of HPC
+resources from within R. That is to say, that R will submit a job or
+multiple jobs, and retrieve the result back to the session.</p>
+<p>There are, for instance, the packages <code>BatchJobs</code> and
+<code>batchtools</code>. These make use of the networked file system to
+write each call and its arguments to a file, that is then retrieved by
+the job and executed. These packages are robust for small numbers of
+jobs, however, they will put a substantial strain on the file system for
+a high number of function calls.</p>
+<p>Instead, we will introduce two packages that make only little use of
+the shared file system, <code>slurmR</code> and <code>clustermq</code>.
+(Note that I am the author of the latter, so there’s a bit of a conflict
+of interest here.)</p>
+<p>There is also the <a href="https://cran.r-project.org/package=Rmpi" class="external-link"><code>Rmpi</code></a>
+package, which provides an R cluster object for
+e.g. <code>parLapply</code> of multiple instances communicating over
+different nodes. There is an example on the <a href="https://sulis-hpc.github.io/gettingstarted/batchq/mpi#parallel-cluster-in-r" class="external-link">Sulis
+docs</a>, however, it requires additional setup in the job submission
+script.</p>
 <div class="section level4">
 <h4 id="slurmr">slurmR<a class="anchor" aria-label="anchor" href="#slurmr"></a>
 </h4>
-<p>The <a href="https://uscbiostats.github.io/slurmR/" class="external-link"><code>slurmR</code></a> package is a lightweight (dependency-free) R package that allows users to interact with the scheduler.</p>
-<p>It can be used to create a cluster object on Slurm tasks analogous to <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>. We do <em>not need</em> a separate submission script, but should run it in an interactive job to not strain the login node. The command for this is <code>slurmR::makeSlurmCluster(ntasks)</code>, which can then be used with the <code>parLapply</code> or <code>parSapply</code> functions:</p>
+<p>The <a href="https://uscbiostats.github.io/slurmR/" class="external-link"><code>slurmR</code></a>
+package is a lightweight (dependency-free) R package that allows users
+to interact with the scheduler.</p>
+<p>It can be used to create a cluster object on Slurm tasks analogous to
+<code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>. We do <em>not need</em> a
+separate submission script, but should run it in an interactive job to
+not strain the login node. The command for this is
+<code>slurmR::makeSlurmCluster(ntasks)</code>, which can then be used
+with the <code>parLapply</code> or <code>parSapply</code> functions:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("slurmR") if you have not installed the package yet</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/slurmR" class="external-link">slurmR</a></span><span class="op">)</span>
+
+<span class="va">opts_slurmR</span><span class="op">$</span><span class="fu">set_preamble</span><span class="op">(</span><span class="st">"module load rjags/4-10-R-4.1.2"</span><span class="op">)</span>
 
 <span class="va">cl</span> <span class="op">=</span> <span class="fu">makeSlurmCluster</span><span class="op">(</span><span class="fl">5</span>, account<span class="op">=</span><span class="st">"su105"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span> <span class="fu">parSapply</span><span class="op">(</span><span class="va">cl</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">}</span><span class="op">)</span>
 
 <span class="fu">stopCluster</span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
-<p>The <code>sbatch</code> call that is created via <code>makeSlurmCluster</code> can be customized by passing different parameters to the cluster creation function. In particular, we need to:</p>
+<p>The <code>sbatch</code> call that is created via
+<code>makeSlurmCluster</code> can be customized by passing different
+parameters to the cluster creation function. In particular, we need
+to:</p>
 <ul>
 <li>Include the right budgeting account</li>
 </ul>
-<p>The jobs started automatically by slurmR will not inherit the same environment used in your interactive job. This will not be a problem if you’ve added module comamnds to your <code>.bashrc</code> file as in the previous exercises.</p>
-<p>More details can be found in their <a href="https://uscbiostats.github.io/slurmR/articles/getting-started.html" class="external-link">Getting Started vignette</a>.</p>
+<p>More details can be found in their <a href="https://uscbiostats.github.io/slurmR/articles/getting-started.html" class="external-link">Getting
+Started vignette</a>.</p>
 </div>
 <div class="section level4">
 <h4 id="clustermq">clustermq<a class="anchor" aria-label="anchor" href="#clustermq"></a>
 </h4>
-<p>The <a href="https://mschubert.github.io/clustermq/" class="external-link"><code>clustermq</code></a> package provides an interface to multiple HPC schedulers (including Slurm) via the ZeroMQ socket library, available as a module assuming the prerequisite modules for R have already been loaded then;</p>
+<p>The <a href="https://mschubert.github.io/clustermq/" class="external-link"><code>clustermq</code></a>
+package provides an interface to multiple HPC schedulers (including
+Slurm) via the ZeroMQ socket library, available as a module:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load ZeroMQ/4.3.4</span></code></pre></div>
-<p>will load a compatible ZeroMQ module.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("clustermq") if you have not installed the package yet</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mschubert.github.io/clustermq/" class="external-link">clustermq</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://mschubert.github.io/clustermq/reference/Q.html" class="external-link">Q</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, i<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, n_jobs<span class="op">=</span><span class="fl">5</span><span class="op">)</span></code></pre></div>
-<p>The package relies on a <a href="https://github.com/mschubert/clustermq/blob/master/inst/SLURM.tmpl" class="external-link">submission template</a>, which by default submits Slurm jobs as a job array. As we need to supply an account name, and the policy on Sulis is to use tasks whenever possible, we should modify the submission template to:</p>
+<p>The package relies on a <a href="https://github.com/mschubert/clustermq/blob/master/inst/SLURM.tmpl" class="external-link">submission
+template</a>, which by default submits Slurm jobs as a job array. As we
+need to supply an account name, and the policy on Sulis is to use tasks
+whenever possible, we should modify the submission template to:</p>
 <ul>
 <li>Include the right budgeting account</li>
 <li>
-<del>Use <code>srun</code> with multiple tasks per index in the job array</del> this is not actually working (yet)</li>
+<del>Use <code>srun</code> with multiple tasks per index in the job
+array</del> this is not actually working (yet)</li>
 </ul>
-<p>To address both points, we can create a new file <code>cmq_slurm.tmpl</code> with the following contents:</p>
+<p>To address both points, we can create a new file
+<code>cmq_slurm.tmpl</code> with the following contents:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --account={{ account | su105 }}</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name={{ job_name }}</span></span>
@@ -404,14 +489,20 @@ Solution breakpoint inference
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.host <span class="op">=</span> <span class="st">"ib0"</span>, <span class="co"># faster network</span>
         clustermq.template <span class="op">=</span> <span class="st">"/path/to/cmq_slurm.tmpl"</span><span class="op">)</span></code></pre></div>
-<p>We can either run these lines in an active R session, or add them to <code>~/.Rprofile</code> to set automatically each time R is started.</p>
-<p><del>This should make the above example run with 10 tasks per job requested.</del> More information on how to configure and use <code>clustermq</code> is available at the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User Guide vignette</a>.</p>
+<p>We can either run these lines in an active R session, or add them to
+<code>~/.Rprofile</code> to set automatically each time R is
+started.</p>
+<p><del>This should make the above example run with 10 tasks per job
+requested.</del> More information on how to configure and use
+<code>clustermq</code> is available at the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User
+Guide vignette</a>.</p>
 </div>
 <div class="section level4">
 <h4 id="exercise-2">Exercise<a class="anchor" aria-label="anchor" href="#exercise-2"></a>
 </h4>
 <ul>
-<li>Run the above <code>mcp</code> example using one interactive “master” job (e.g. using the R integration with <code>nvim</code>) and
+<li>Run the above <code>mcp</code> example using one interactive
+“master” job (e.g. using the R integration with <code>nvim</code>) and
 <ul>
 <li>Run the workers with <code>slurmR</code>
 </li>
@@ -424,7 +515,8 @@ Solution breakpoint inference
 Solution <code>slurmR</code>
 </summary><p>If not in an interactive job yet, start it using</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">--account</span> su105 <span class="at">--ntasks</span><span class="op">=</span>1 <span class="at">--cpus-per-task</span><span class="op">=</span>1 <span class="at">--time</span> 6:00:00 <span class="at">--pty</span> <span class="va">$SHELL</span></span></code></pre></div>
-<p>In <code>nvim</code> create the file <em>compute_breakpt_slurmR.r</em>:</p>
+<p>In <code>nvim</code> create the file
+<em>compute_breakpt_slurmR.r</em>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/slurmR" class="external-link">slurmR</a></span><span class="op">)</span>
 
@@ -453,7 +545,8 @@ Solution <code>slurmR</code>
 Solution <code>clustermq</code>
 </summary><p>If not in an interactive job yet, start it using</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">--account</span> su105 <span class="at">--ntasks</span><span class="op">=</span>1 <span class="at">--cpus-per-task</span><span class="op">=</span>1 <span class="at">--time</span> 6:00:00 <span class="at">--pty</span> <span class="va">$SHELL</span></span></code></pre></div>
-<p>In <code>nvim</code> create the file <em>compute_breakpt_clustermq.r</em>:</p>
+<p>In <code>nvim</code> create the file
+<em>compute_breakpt_clustermq.r</em>:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mschubert.github.io/clustermq/" class="external-link">clustermq</a></span><span class="op">)</span>
 
@@ -486,12 +579,13 @@ Solution <code>clustermq</code>
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Michael Schubert.</p>
+<p>Developed by Michael Schubert, Warwick University.</p>
 </div>
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
     </footer>
