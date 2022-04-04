@@ -375,7 +375,7 @@ interface to multiple HPC schedulers (including Slurm) via the ZeroMQ socket
 library, available as a module:
 
 ```{sh eval=FALSE}
-module load ZeroMQ/4.3.4
+module load GCCcore/11.2.0 ZeroMQ/4.3.4
 ```
 
 ```{r eval=FALSE}
@@ -392,7 +392,7 @@ account name, and the policy on Sulis is to use tasks whenever possible, we
 should modify the submission template to:
 
 * Include the right budgeting account
-* ~~Use `srun` with multiple tasks per index in the job array~~ this is not
+* Use `srun` with multiple tasks per index in the job array this is not
   actually working (yet)
 
 To address both points, we can create a new file `cmq_slurm.tmpl` with the
@@ -402,13 +402,13 @@ following contents:
 #!/bin/sh
 #SBATCH --account={{ account | su105 }}
 #SBATCH --job-name={{ job_name }}
-#SBATCH --array=1-{{ n_jobs }}
+#SBATCH --ntasks={{ n_jobs }}
 #SBATCH --mem-per-cpu={{ memory | 1024M }}
 #SBATCH --cpus-per-task={{ cores | 1 }}
 
 module load rjags/4-10-R-4.1.2 # this we will need for our example
 
-CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} srun R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 We can then use this newly created template by:
@@ -421,7 +421,7 @@ options(clustermq.host = "ib0", # faster network
 We can either run these lines in an active R session, or add them to
 `~/.Rprofile` to set automatically each time R is started.
 
-~~This should make the above example run with 10 tasks per job requested.~~ More
+This should make the above example run within tasks instead of an array job. More
 information on how to configure and use `clustermq` is available at the [User
 Guide vignette](https://mschubert.github.io/clustermq/articles/userguide.html).
 
