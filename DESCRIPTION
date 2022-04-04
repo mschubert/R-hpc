@@ -4,7 +4,12 @@ Version: 0.1.0
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre'),
-           comment = c(ORCID='0000-0002-6862-5221'))
+           comment = c(ORCID='0000-0002-6862-5221')),
+    person('David', 'Quigley', email='D.Quigley@warwick.ac.uk',
+           role = c('ctb')),
+    person('Heather', 'Turner', email='H.Turner.1@warwick.ac.uk ',
+           role = c('ctb')),
+    person("Warwick University", role = c("cph", "fnd"))
     )
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: enter description here
@@ -18,7 +23,7 @@ Imports:
     progress,
     reticulate,
     utils
-License: Apache License (== 2.0) | file LICENSE
+License: CC-BY-SA | file LICENSE
 Encoding: UTF-8
 Suggests:
     devtools,
